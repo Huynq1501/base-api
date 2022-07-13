@@ -109,7 +109,7 @@ class WebServiceConfig extends BaseHttp
                     'inputData' => $this->inputData
                 );
             } else {
-                $id = $this->slug->slugify($id);
+                $id = $this->slug->slugify($id, '_');
                 $data = array(
                     'id' => $id,
                     'language' => $language,
@@ -177,19 +177,20 @@ class WebServiceConfig extends BaseHttp
                     'desc' => 'Sai hoac thieu tham so.',
                     'inputData' => $this->inputData
                 );
-            }
-            $data = array(
-                'category' => $category,
-                'pageNumber' => $pageNumber,
-                'numberRecordOfPage' => $numberRecordOfPage,
-            );
-            $listConfig = $this->db->listConfig($data);
+            } else {
+                $data = array(
+                    'category' => $category,
+                    'pageNumber' => $pageNumber,
+                    'numberRecordOfPage' => $numberRecordOfPage,
+                );
+                $listConfig = $this->db->listConfig($data);
 
-            $response = array(
-                'result' => self::EXIT_CODE['success'],
-                'desc' => 'Danh sách config',
-                'data' => $listConfig,
-            );
+                $response = array(
+                    'result' => self::EXIT_CODE['success'],
+                    'desc' => 'Danh sách config',
+                    'data' => $listConfig,
+                );
+            }
         }
 
         $this->response = $response;
@@ -197,8 +198,9 @@ class WebServiceConfig extends BaseHttp
         return $this;
     }
 
-    public function show():WebServiceConfig{
-        $filter = Filter::filterInputDataIsArray($this->inputData, ['id','language']);
+    public function show(): WebServiceConfig
+    {
+        $filter = Filter::filterInputDataIsArray($this->inputData, ['id', 'language']);
 
         if ($filter === false) {
             $response = array(
@@ -206,18 +208,42 @@ class WebServiceConfig extends BaseHttp
                 'desc' => 'sai hoặc thiếu tham số',
                 'inputData' => $this->inputData
             );
-        }else{
-            $id = $this->slug->slugify($this->inputData['id']);
+        } else {
+            $id = $this->inputData['id'] ?? null;
             $language = $this->inputData['language'] ?? null;
 
-            $data = array(
-                'id' => $id,
-                'language' => $language,
-            );
+            if (empty($id) || empty($language)) {
+                $response = array(
+                    'result' => self::EXIT_CODE['paramsIsEmpty'],
+                    'desc' => 'Sai hoac thieu tham so.',
+                    'inputData' => $this->inputData
+                );
+            } else {
+                // Đoạn id này em đang phân vân không biết có nên format không.
+                $id = $this->slug->slugify($this->inputData['id'], '_');
 
-            $result = $this->db->showConfig($data);
+                $data = array(
+                    'id' => $id,
+                    'language' => $language,
+                );
+                $result = $this->db->showConfig($data);
 
+                if ($result->count() === 1) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['success'],
+                        'desc' => 'Thành công',
+                        'data' => json_encode($result[0]),
+                    );
+                } else {
+                    $response = array(
+                        'result' => self::EXIT_CODE['notFound'],
+                        'desc' => 'Không tồn tại config',
+                        'inputData' => $this->inputData
+                    );
+                }
+            }
         }
+
         $this->response = $response;
 
         return $this;

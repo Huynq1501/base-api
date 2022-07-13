@@ -39,12 +39,17 @@ $config = [
 ];
 
 $inputData = [
-    'id' => 'send_mail',
+    'id' => 'company_name',
     'language' => 'vietnamese',
     'value' => 31111,
     'label' => 'abc',
     'type' => 2,
     'status' => 3,
+];
+
+$showData = [
+    'id' => 'company-name',
+    'language' => 'vietnamese',
 ];
 
 $listData = [
@@ -58,13 +63,13 @@ $listData = [
 //$api->setInputData($listData)
 //    ->list();
 
-//
+//api show
 $api = new WebServiceConfig($config['OPTIONS']);
 $api->setSdkConfig($config);
-$api->setInputData($inputData)
+$api->setInputData($showData)
     ->show();
 
-////api  creat or update
+////api  create or update
 //$api = new WebServiceConfig($config['OPTIONS']);
 //$api->setSdkConfig($config);
 //$api->setInputData($inputData)

@@ -94,15 +94,28 @@ trait ConfigTable
         return $result;
     }
 
-    public function showConfig(array $data = array()){
+    public function showConfig(array $data = array())
+    {
         $DB = $this->configTable();
-
         //show result
         $result = $DB->getResult(
             [
-                'id' => ['field' => 'id', 'operator' => 'like', 'value' => $data['category'] . '%']
+                'id' => [
+                    'field' => 'id',
+                    'operator' => '=',
+                    'value' => $data['id']
+                ],
+                'language'=>[
+                    'field' => 'language',
+                    'operator' => '=',
+                    'value' => $data['language']
+                ]
             ],
-            '*',null);
+            '*');
+
+        $DB->disconnect();
+
+        return $result;
     }
 
 }

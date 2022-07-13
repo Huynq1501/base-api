@@ -55,7 +55,7 @@ class Database extends BaseCore
     /**
      * Function connection
      *
-     * @return \nguyenanhung\MyDatabase\Model\BaseModel
+     * @return BaseModel
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 40:58
