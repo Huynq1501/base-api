@@ -1,14 +1,14 @@
 <?php
 
-namespace nguyenanhung\Backend\Your_Project\Http;
+namespace nguyenanhung\Backend\BaseAPI\Http;
 
-use nguyenanhung\Backend\Your_Project\Base\BaseCore;
-use nguyenanhung\Backend\Your_Project\Database\Database;
+use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
+use nguyenanhung\Backend\BaseAPI\Database\Database;
 
 /**
  * Class BaseHttp
  *
- * @package   nguyenanhung\Backend\Your_Project\Http
+ * @package   nguyenanhung\Backend\BaseAPI\Http
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
@@ -24,7 +24,7 @@ class BaseHttp extends BaseCore
         'paramsIsEmpty'     => 6,
     ];
 
-    /** @var \nguyenanhung\Backend\Your_Project\Database\Database */
+    /** @var \nguyenanhung\Backend\BaseAPI\Database\Database */
     protected $db;
 
     /**

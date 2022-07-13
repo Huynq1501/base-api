@@ -1,11 +1,11 @@
 <?php
 
-namespace nguyenanhung\Backend\Your_Project\Config;
+namespace nguyenanhung\Backend\BaseAPI\Config;
 
 /**
  * Class DataRepository
  *
- * @package   nguyenanhung\Backend\Your_Project\Config
+ * @package   nguyenanhung\Backend\BaseAPI\Config
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */

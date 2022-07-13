@@ -8,14 +8,14 @@
  * Time: 00:24
  */
 
-namespace nguyenanhung\Backend\Your_Project\Repository;
+namespace nguyenanhung\Backend\BaseAPI\Repository;
 
-use nguyenanhung\Backend\Your_Project\Base\BaseCore;
+use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
 
 /**
  * Class BaseRepository
  *
- * @package   nguyenanhung\Backend\Your_Project\Repository
+ * @package   nguyenanhung\Backend\BaseAPI\Repository
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */

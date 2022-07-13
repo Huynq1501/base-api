@@ -38,7 +38,7 @@
     },
     "autoload": {
         "psr-4": {
-            "nguyenanhung\\Backend\\Your_Project\\": "src/"
+            "nguyenanhung\\Backend\\BaseAPI\\": "src/"
         },
         "files": [
             "helpers/helpers.php"

@@ -1,15 +1,15 @@
 <?php
 
-namespace nguyenanhung\Backend\Your_Project\Database;
+namespace nguyenanhung\Backend\BaseAPI\Database;
 
-use nguyenanhung\Backend\Your_Project\Base\BaseCore;
-use nguyenanhung\Backend\Your_Project\Database\Traits\SignatureTable;
+use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
+use nguyenanhung\Backend\BaseAPI\Database\Traits\SignatureTable;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
  * Class Database
  *
- * @package   nguyenanhung\Backend\Your_Project\Database
+ * @package   nguyenanhung\Backend\BaseAPI\Database
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
