@@ -102,49 +102,64 @@ class WebServiceConfig extends BaseHttp
             $label = $this->inputData['label'] ?? null;
             $type = $this->formatType($this->inputData);
             $status = $this->formatStatus($this->inputData);
-            if (empty($id) || empty($language) || empty($value)) {
+            $username  = $this->formatInputUsername($this->inputData);
+            $signature = $this->formatInputSignature($this->inputData);
+            if (empty($id) || empty($language) || empty($value)|| empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => 'Sai hoac thieu tham so.',
                     'inputData' => $this->inputData
                 );
             } else {
-                $id = $this->slug->slugify($id, '_');
-                $data = array(
-                    'id' => $id,
-                    'language' => $language,
-                    'value' => $value,
-                    'label' => $label,
-                    'type' => $type,
-                    'status' => $status,
-                );
-                $wheres = array(
-                    'id' => $id,
-                    'language' => $language,
-                );
-                $checkDuplicateId = $this->db->checkConfigExists($wheres);
+                // Request User Roles
+                $user           = $this->db->getUserSignature($username);
+                $validSignature = !empty($user) ? md5($id . '$' . $value . '$' . $language . "$" . $username . "$" . $user->signature) : "";
 
-                if ($checkDuplicateId) {
-                    $result = $this->db->updateConfig($data);
-                    if ($result) {
-                        $response = array(
-                            'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Đã ghi nhận update config thành công',
-                            'update_id' => $data['id'],
-                        );
+                if ($signature !== $validSignature || empty($user)) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['invalidSignature'],
+                        'desc'   => 'Sai chu ky xac thuc.',
+                        'valid'  => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
+                    );
+                }
+                else{
+                    $id = $this->slug->slugify($id, '_');
+                    $data = array(
+                        'id' => $id,
+                        'language' => $language,
+                        'value' => $value,
+                        'label' => $label,
+                        'type' => $type,
+                        'status' => $status,
+                    );
+                    $wheres = array(
+                        'id' => $id,
+                        'language' => $language,
+                    );
+                    $checkDuplicateId = $this->db->checkConfigExists($wheres);
+
+                    if ($checkDuplicateId) {
+                        $result = $this->db->updateConfig($data);
+                        if ($result) {
+                            $response = array(
+                                'result' => self::EXIT_CODE['success'],
+                                'desc' => 'Đã ghi nhận update config thành công',
+                                'update_id' => $data['id'],
+                            );
+                        } else {
+                            $response = array(
+                                'result' => self::EXIT_CODE['success'],
+                                'desc' => 'Không có gì thay đổi',
+                            );
+                        }
                     } else {
+                        $this->db->createConfig($data);
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Không có gì thay đổi',
+                            'desc' => 'Đã ghi nhận config thành công',
+                            'insert_id' => $data['id'],
                         );
                     }
-                } else {
-                    $this->db->createConfig($data);
-                    $response = array(
-                        'result' => self::EXIT_CODE['success'],
-                        'desc' => 'Đã ghi nhận config thành công',
-                        'insert_id' => $data['id'],
-                    );
                 }
             }
         }
