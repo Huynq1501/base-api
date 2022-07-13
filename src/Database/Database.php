@@ -3,6 +3,7 @@
 namespace nguyenanhung\Backend\BaseAPI\Database;
 
 use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
+use nguyenanhung\Backend\BaseAPI\Database\Traits\ConfigTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\SignatureTable;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
@@ -15,7 +16,7 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 class Database extends BaseCore
 {
-    use SignatureTable;
+    use SignatureTable,ConfigTable;
 
     /** @var array $database */
     protected $database;

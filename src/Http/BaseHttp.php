@@ -22,6 +22,9 @@ class BaseHttp extends BaseCore
         'outdatedSignature' => 4,
         'invalidService'    => 5,
         'paramsIsEmpty'     => 6,
+        'duplicatePrimaryKey' => 7,
+        'notFound' => 8
+
     ];
 
     /** @var \nguyenanhung\Backend\BaseAPI\Database\Database */

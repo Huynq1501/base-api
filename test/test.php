@@ -34,7 +34,7 @@ $config = [
     ]
 ];
 
-use nguyenanhung\Backend\BaseAPI\Http\WebServiceAccount;
+use nguyenanhung\Backend\BaseAPI\Http\WebServiceConfig;
 
 $inputData = [
     'start_date' => '2022-06-01',
@@ -44,7 +44,7 @@ $inputData = [
     'signature'  => 'xxx'
 ];
 
-$api = new WebServiceAccount($config['OPTIONS']);
+$api = new WebServiceConfig($config['OPTIONS']);
 $api->setSdkConfig($config);
 $api->setInputData($inputData)
     ->register();

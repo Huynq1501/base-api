@@ -69,14 +69,4 @@ class WebServiceAccount extends BaseHttp
         return $this;
     }
 
-    public function forgotPassword(): WebServiceAccount
-    {
-        $data           = [
-            'code'        => self::EXIT_CODE['success'],
-            'description' => 'Success'
-        ];
-        $this->response = $data;
-
-        return $this;
-    }
 }
