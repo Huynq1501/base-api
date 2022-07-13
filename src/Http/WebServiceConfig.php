@@ -84,7 +84,6 @@ class WebServiceConfig extends BaseHttp
         return self::PAGINATE['number_record_of_pages'];
     }
 
-
     public function createOrUpdate(): WebServiceConfig
     {
         $required = ['id', 'value', 'language'];
@@ -160,6 +159,7 @@ class WebServiceConfig extends BaseHttp
     public function list(): WebServiceConfig
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['category']);
+
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
@@ -197,5 +197,29 @@ class WebServiceConfig extends BaseHttp
         return $this;
     }
 
+    public function show():WebServiceConfig{
+        $filter = Filter::filterInputDataIsArray($this->inputData, ['id','language']);
 
+        if ($filter === false) {
+            $response = array(
+                'result' => self::EXIT_CODE['invalidParams'],
+                'desc' => 'sai hoặc thiếu tham số',
+                'inputData' => $this->inputData
+            );
+        }else{
+            $id = $this->slug->slugify($this->inputData['id']);
+            $language = $this->inputData['language'] ?? null;
+
+            $data = array(
+                'id' => $id,
+                'language' => $language,
+            );
+
+            $result = $this->db->showConfig($data);
+
+        }
+        $this->response = $response;
+
+        return $this;
+    }
 }

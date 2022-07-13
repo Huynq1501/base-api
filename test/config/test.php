@@ -39,8 +39,8 @@ $config = [
 ];
 
 $inputData = [
-    'id' => 'hi1ppo    19 21',
-    'language' => '1',
+    'id' => 'send_mail',
+    'language' => 'vietnamese',
     'value' => 31111,
     'label' => 'abc',
     'type' => 2,
@@ -53,10 +53,16 @@ $listData = [
     'number_record_of_pages' => 2,
 ];
 // api list
+//$api = new WebServiceConfig($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($listData)
+//    ->list();
+
+//
 $api = new WebServiceConfig($config['OPTIONS']);
 $api->setSdkConfig($config);
-$api->setInputData($listData)
-    ->list();
+$api->setInputData($inputData)
+    ->show();
 
 ////api  creat or update
 //$api = new WebServiceConfig($config['OPTIONS']);
