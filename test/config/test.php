@@ -43,8 +43,10 @@ $inputData = [
     'language' => 'vietnamese',
     'value' => 31111,
     'label' => 'abc',
-    'type' => 2,
-    'status' => 3,
+    'type' => 0,
+    'status' => 1,
+    'username'=>'hippo_push',
+    'signature'=>'9f277baf49a4bd8f1408e84386db7a65'
 ];
 
 $showData = [
@@ -64,16 +66,16 @@ $listData = [
 //    ->list();
 
 //api show
-$api = new WebServiceConfig($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($showData)
-    ->show();
-
-////api  create or update
 //$api = new WebServiceConfig($config['OPTIONS']);
 //$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//$api->setInputData($showData)
+//    ->show();
+
+////api  create or update
+$api = new WebServiceConfig($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 
 echo "<pre>";
