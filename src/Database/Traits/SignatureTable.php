@@ -2,6 +2,8 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
+use Illuminate\Support\Collection;
+
 /**
  * Trait SignatureTable
  *
@@ -17,7 +19,7 @@ trait SignatureTable
      * @param string|null $nickname
      * @param int|null    $role
      *
-     * @return array|bool|\Illuminate\Support\Collection|mixed|object|string|null
+     * @return array|bool|Collection|mixed|object|string|null
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 56:41
@@ -33,7 +35,7 @@ trait SignatureTable
             $wheres             = [];
             $wheres['nickname'] = ['field' => 'nickname', 'operator' => $DB::OPERATOR_EQUAL_TO, 'value' => $nickname];
             $wheres['status']   = ['field' => 'status', 'operator' => $DB::OPERATOR_EQUAL_TO, 'value' => 1];
-            if (!empty($role)) {
+            if ($role !== null) {
                 $wheres['status'] = ['field' => 'role', 'operator' => $DB::OPERATOR_EQUAL_TO, 'value' => $role];
             }
             $result = $DB->setTable($table)->getInfo($wheres, 'id', null, ['nickname', 'signature', 'role']);

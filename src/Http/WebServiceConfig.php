@@ -61,9 +61,9 @@ class WebServiceConfig extends BaseHttp
     {
         if (in_array($inputData['status'], self::STATUS, true)) {
             return $inputData['status'];
-        } else {
-            return 1;
         }
+
+        return 1;
     }
 
     public function formatPageNumber($inputData = array())
@@ -102,9 +102,9 @@ class WebServiceConfig extends BaseHttp
             $label = $this->inputData['label'] ?? null;
             $type = $this->formatType($this->inputData);
             $status = $this->formatStatus($this->inputData);
-            $username  = $this->formatInputUsername($this->inputData);
+            $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
-            if (empty($id) || empty($language) || empty($value)|| empty($signature) || empty($username)) {
+            if (empty($id) || empty($language) || empty($value) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => 'Sai hoac thieu tham so.',
@@ -112,17 +112,16 @@ class WebServiceConfig extends BaseHttp
                 );
             } else {
                 // Request User Roles
-                $user           = $this->db->getUserSignature($username);
+                $user = $this->db->getUserSignature($username);
                 $validSignature = !empty($user) ? md5($id . '$' . $value . '$' . $language . "$" . $username . "$" . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc'   => 'Sai chu ky xac thuc.',
-                        'valid'  => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
+                        'desc' => 'Sai chu ky xac thuc.',
+                        'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
-                }
-                else{
+                } else {
                     $id = $this->slug->slugify($id, '_');
                     $data = array(
                         'id' => $id,
@@ -185,26 +184,40 @@ class WebServiceConfig extends BaseHttp
             $category = $this->inputData['category'] ?? null;
             $pageNumber = $this->formatPageNumber($this->inputData);
             $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+            $username = $this->formatInputUsername($this->inputData);
+            $signature = $this->formatInputSignature($this->inputData);
 
-            if (empty($category)) {
+            if (empty($category) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => 'Sai hoac thieu tham so.',
                     'inputData' => $this->inputData
                 );
             } else {
-                $data = array(
-                    'category' => $category,
-                    'pageNumber' => $pageNumber,
-                    'numberRecordOfPage' => $numberRecordOfPage,
-                );
-                $listConfig = $this->db->listConfig($data);
+                $user = $this->db->getUserSignature($username);
+                $validSignature = !empty($user) ? md5($category . "$" . $username . "$" . $user->signature) : "";
 
-                $response = array(
-                    'result' => self::EXIT_CODE['success'],
-                    'desc' => 'Danh sách config',
-                    'data' => $listConfig,
-                );
+                if ($signature !== $validSignature || empty($user)) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['invalidSignature'],
+                        'desc' => 'Sai chu ky xac thuc.',
+                        'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
+                    );
+                } else {
+                    $data = array(
+                        'category' => $category,
+                        'pageNumber' => $pageNumber,
+                        'numberRecordOfPage' => $numberRecordOfPage,
+                    );
+                    $listConfig = $this->db->listConfig($data);
+
+                    $response = array(
+                        'result' => self::EXIT_CODE['success'],
+                        'desc' => 'Danh sách config',
+                        'data' => $listConfig,
+                    );
+                }
+
             }
         }
 
@@ -215,7 +228,8 @@ class WebServiceConfig extends BaseHttp
 
     public function show(): WebServiceConfig
     {
-        $filter = Filter::filterInputDataIsArray($this->inputData, ['id', 'language']);
+        $required = ['id', 'language'];
+        $filter = Filter::filterInputDataIsArray($this->inputData, $required);
 
         if ($filter === false) {
             $response = array(
@@ -226,35 +240,48 @@ class WebServiceConfig extends BaseHttp
         } else {
             $id = $this->inputData['id'] ?? null;
             $language = $this->inputData['language'] ?? null;
-
-            if (empty($id) || empty($language)) {
+            $username = $this->formatInputUsername($this->inputData);
+            $signature = $this->formatInputSignature($this->inputData);
+            if (empty($id) || empty($language) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => 'Sai hoac thieu tham so.',
                     'inputData' => $this->inputData
                 );
             } else {
-                // Đoạn id này em đang phân vân không biết có nên format không.
-                $id = $this->slug->slugify($this->inputData['id'], '_');
+                // Request User Roles
+                $user = $this->db->getUserSignature($username);
+                $validSignature = !empty($user) ? md5($id . '$' . $language . "$" . $username . "$" . $user->signature) : "";
 
-                $data = array(
-                    'id' => $id,
-                    'language' => $language,
-                );
-                $result = $this->db->showConfig($data);
-
-                if ($result->count() === 1) {
+                if ($signature !== $validSignature || empty($user)) {
                     $response = array(
-                        'result' => self::EXIT_CODE['success'],
-                        'desc' => 'Thành công',
-                        'data' => json_encode($result[0]),
+                        'result' => self::EXIT_CODE['invalidSignature'],
+                        'desc' => 'Sai chu ky xac thuc.',
+                        'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
-                    $response = array(
-                        'result' => self::EXIT_CODE['notFound'],
-                        'desc' => 'Không tồn tại config',
-                        'inputData' => $this->inputData
+                    // Đoạn id này em đang phân vân không biết có nên format không.
+                    $id = $this->slug->slugify($this->inputData['id'], '_');
+
+                    $data = array(
+                        'id' => $id,
+                        'language' => $language,
                     );
+                    $result = $this->db->showConfig($data);
+
+                    if ($result->count() === 1) {
+                        $response = array(
+                            'result' => self::EXIT_CODE['success'],
+                            'desc' => 'Thành công',
+                            'data' => json_encode($result[0]),
+                        );
+                    } else {
+                        $response = array(
+                            'result' => self::EXIT_CODE['notFound'],
+                            'desc' => 'Không tồn tại config',
+                            'inputData' => $this->inputData
+                        );
+                    }
                 }
             }
         }
