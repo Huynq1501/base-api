@@ -5,7 +5,7 @@ namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
- * Trait SignatureTable
+ * Trait ConfigTable
  *
  * @package   nguyenanhung\Backend\BaseAPI\Database\Traits
  * @author    713uk13m <dev@nguyenanhung.com>
@@ -85,7 +85,7 @@ trait ConfigTable
             '*',
             [
                 'limit' => $data['numberRecordOfPage'],
-                'offset' => ($data['pageNumber'] - 1) * $data['numberRecordOfPage'],
+                'offset' => $data['pageNumber'],
                 'orderBy' => ['id' => 'desc']
             ]
         );
