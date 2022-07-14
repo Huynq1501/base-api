@@ -8,7 +8,8 @@
  * Time: 00:19
  */
 
-use nguyenanhung\Backend\BaseAPI\Http\WebServiceConfig;
+
+use nguyenanhung\Backend\BaseAPI\Http\WebServiceOption;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -39,47 +40,43 @@ $config = [
 ];
 
 $inputData = [
-    'id' => 'company_name',
-    'language' => 'vietnamese',
-    'value' => 31111,
-    'label' => 'abc',
-    'type' => 2,
+    'id' => 9,
+    'name' => 'option8',
+    'value' => 'test option 2',
     'status' => 1,
-    'username'=>'hippo_push',
-    'signature'=>'8eb1e73941faa30b18352c8e0cc218e7'
+    'username' => 'hippo_push',
+    'signature' => '9f62790541d6f58c86f4f3e5d0dd56f4'
 ];
 
 $showData = [
-    'id' => 'company-name',
-    'language' => 'vietnamese',
-    'username'=>'hippo_push',
-    'signature'=>'ae53d7b281ba1d62ab315301e33b3073'
+    'id' => 8,
+    'username' => 'hippo_push',
+    'signature' => 'a90e3586166497ecbcac3e5117aac34a'
 ];
-
+//
 $listData = [
-    'category' => 'site',
-    'page_number' => 2,
-    'number_record_of_pages' => 4,
-    'username'=>'hippo_push',
-    'signature'=>'94426fe48898d120d14c300279ee454a'
+    'page_number' => 3,
+    'number_record_of_pages' => 3,
+    'username' => 'hippo_push',
+    'signature' => '073f5afed56bb19a656e34d5020cc63f'
 ];
 //api list
-$api = new WebServiceConfig($config['OPTIONS']);
+$api = new WebServiceOption($config['OPTIONS']);
 $api->setSdkConfig($config);
 $api->setInputData($listData)
     ->list();
 
 //api show
-//$api = new WebServiceConfig($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($showData)
-//    ->show();
+$api = new WebServiceOption($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($showData)
+    ->show();
 
-////api  create or update
-//$api = new WebServiceConfig($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//api  create or update
+$api = new WebServiceOption($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 
 echo "<pre>";

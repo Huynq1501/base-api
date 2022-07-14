@@ -5,18 +5,18 @@ namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
- * Trait ConfigTable
+ * Trait OptionTable
  *
  * @package   nguyenanhung\Backend\BaseAPI\Database\Traits
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
-trait ConfigTable
+trait OptionTable
 {
-    protected function configTable(): BaseModel
+    protected function optionTable(): BaseModel
     {
-        // connect to config table
-        $table = 'config';
+        // connect to Option table
+        $table = 'option';
         $DB = $this->connection();
         $DB->setTable($table);
 
@@ -28,60 +28,52 @@ trait ConfigTable
      *
      * @param array $data
      *
-     * @return bool
+     * @return int
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 56:41
      */
-    public function createConfig(array $data = array()): bool
+    public function createOption(array $data = array()): int
     {
-        $DB = $this->configTable();
+        $DB = $this->optionTable();
 
         //create result
         $result = $DB->add($data);
         $DB->disconnect();
 
-        return $result !== 0;
+        return $result;
     }
 
-    public function updateConfig(array $data = array()): int
+    public function updateOption(array $data = array()): int
     {
-        // connect to config table
-        $DB = $this->configTable();
+        // connect to option table
+        $DB = $this->optionTable();
 
-        //update config
+        //update option
         $result = $DB->update($data, $data['id']);
         $DB->disconnect();
 
         return $result;
     }
 
-    public function checkConfigExists($id): bool
+    public function checkOptionExists($where): bool
     {
-        $DB = $this->configTable();
+        $DB = $this->optionTable();
 
         //create result
-        $result = $DB->checkExists($id);
+        $result = $DB->checkExists($where);
         $DB->disconnect();
 
         return $result === 1;
     }
 
-    public function listConfig(array $data = array())
+    public function listOption(array $data = array())
     {
-        // connect to config table
-        $DB = $this->configTable();
-
-        //get config data
+        // connect to option table
+        $DB = $this->optionTable();
+        //get option data
         $result = $DB->getResult(
-            [
-                'where' =>
-                    [
-                        'field' => 'id',
-                        'operator' => 'like',
-                        'value' => $data['category'] . '%'
-                    ]
-            ],
+            [],
             '*',
             [
                 'limit' => $data['numberRecordOfPage'],
@@ -89,14 +81,15 @@ trait ConfigTable
                 'orderBy' => ['id' => 'desc']
             ]
         );
+
         $DB->disconnect();
 
         return $result;
     }
 
-    public function showConfig(array $data = array())
+    public function showOption(array $data = array())
     {
-        $DB = $this->configTable();
+        $DB = $this->optionTable();
         //show result
         $result = $DB->getResult(
             [
@@ -104,11 +97,6 @@ trait ConfigTable
                     'field' => 'id',
                     'operator' => '=',
                     'value' => $data['id']
-                ],
-                'language'=>[
-                    'field' => 'language',
-                    'operator' => '=',
-                    'value' => $data['language']
                 ]
             ],
             '*');
