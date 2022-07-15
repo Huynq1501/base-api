@@ -181,11 +181,6 @@ class WebServiceTopic extends BaseHttp
                         'keywords' => $keywords,
                         'content' => $content,
                         'photo' => $photo,
-                        'view_total' => 0,
-                        'view_day' => 0,
-                        'view_week' => 0,
-                        'view_month' => 0,
-                        'view_year' => 0,
                     );
 
                     if (isset($this->inputData['id'])) {
@@ -220,6 +215,12 @@ class WebServiceTopic extends BaseHttp
                         }
                     } else {
                         $data['created_at'] = date("Y/m/d H:i:s");
+                        $data['view_total'] = 0;
+                        $data['view_day'] = 0;
+                        $data['view_week'] = 0;
+                        $data['view_month'] = 0;
+                        $data['view_year'] = 0;
+
                         $id = $this->db->createTopic($data);
 
                         if ($id > 0) {
@@ -247,7 +248,8 @@ class WebServiceTopic extends BaseHttp
 
     }
 
-    public function list():WebServiceTopic{
+    public function list(): WebServiceTopic
+    {
         $pageNumber = $this->formatPageNumber($this->inputData);
         $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
         $username = $this->formatInputUsername($this->inputData);
@@ -322,7 +324,7 @@ class WebServiceTopic extends BaseHttp
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
-                    $result = $this->db->showTopic(array('id'=>$id));
+                    $result = $this->db->showTopic(array('id' => $id));
 
                     if ($result->count() === 1) {
                         $response = array(
