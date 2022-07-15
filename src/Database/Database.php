@@ -7,6 +7,7 @@ use nguyenanhung\Backend\BaseAPI\Database\Traits\CategoryTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\ConfigTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\OptionTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\SignatureTable;
+use nguyenanhung\Backend\BaseAPI\Database\Traits\TagTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\TopicTable;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
@@ -19,7 +20,7 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 class Database extends BaseCore
 {
-    use SignatureTable,ConfigTable,OptionTable,TopicTable,CategoryTable;
+    use SignatureTable,ConfigTable,OptionTable,TopicTable,CategoryTable,TagTable;
 
     /** @var array $database */
     protected $database;
