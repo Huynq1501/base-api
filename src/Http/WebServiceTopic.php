@@ -189,12 +189,13 @@ class WebServiceTopic extends BaseHttp
                     );
 
                     if (isset($this->inputData['id'])) {
+                        $id = $this->inputData['id'] ?? null;
+
                         $wheres = array(
-                            'name' => $name,
+                            'id' => $id,
                         );
                         $checkTopicExits = $this->db->checkTopicExists($wheres);
                         if ($checkTopicExits) {
-                            $id = $this->inputData['id'] ?? null;
                             $data['id'] = $id;
                             $data['updated_at'] = date("Y/m/d H:i:s");
                             $result = $this->db->updateTopic($data);
@@ -245,4 +246,103 @@ class WebServiceTopic extends BaseHttp
         return $this;
 
     }
+
+    public function list():WebServiceTopic{
+        $pageNumber = $this->formatPageNumber($this->inputData);
+        $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+        $username = $this->formatInputUsername($this->inputData);
+        $signature = $this->formatInputSignature($this->inputData);
+
+        if (empty($signature) || empty($username)) {
+            $response = array(
+                'result' => self::EXIT_CODE['paramsIsEmpty'],
+                'desc' => 'Sai hoac thieu tham so.',
+                'inputData' => $this->inputData
+            );
+        } else {
+            $user = $this->db->getUserSignature($username);
+            $validSignature = !empty($user) ? md5($username . "$" . $user->signature) : "";
+
+            if ($signature !== $validSignature || empty($user)) {
+                $response = array(
+                    'result' => self::EXIT_CODE['invalidSignature'],
+                    'desc' => 'Sai chu ky xac thuc.',
+                    'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
+                );
+            } else {
+                $data = array(
+                    'pageNumber' => $pageNumber,
+                    'numberRecordOfPage' => $numberRecordOfPage,
+                );
+                $listConfig = $this->db->listTopic($data);
+
+                $response = array(
+                    'result' => self::EXIT_CODE['success'],
+                    'desc' => 'Danh sách topic',
+                    'data' => $listConfig,
+                );
+            }
+
+        }
+
+        $this->response = $response;
+
+        return $this;
+    }
+
+    public function show(): WebServiceTopic
+    {
+        $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
+
+        if ($filter === false) {
+            $response = array(
+                'result' => self::EXIT_CODE['invalidParams'],
+                'desc' => 'sai hoặc thiếu tham số',
+                'inputData' => $this->inputData
+            );
+        } else {
+            $id = $this->inputData['id'] ?? null;
+            $username = $this->formatInputUsername($this->inputData);
+            $signature = $this->formatInputSignature($this->inputData);
+            if (empty($id) || empty($signature) || empty($username)) {
+                $response = array(
+                    'result' => self::EXIT_CODE['paramsIsEmpty'],
+                    'desc' => 'Sai hoac thieu tham so.',
+                    'inputData' => $this->inputData
+                );
+            } else {
+                // Request User Roles
+                $user = $this->db->getUserSignature($username);
+                $validSignature = !empty($user) ? md5($id . '$' . $username . "$" . $user->signature) : "";
+
+                if ($signature !== $validSignature || empty($user)) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['invalidSignature'],
+                        'desc' => 'Sai chu ky xac thuc.',
+                        'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
+                    );
+                } else {
+                    $result = $this->db->showTopic(array('id'=>$id));
+
+                    if ($result->count() === 1) {
+                        $response = array(
+                            'result' => self::EXIT_CODE['success'],
+                            'desc' => 'Đã nhận topic thành công',
+                            'data' => json_encode($result[0]),
+                        );
+                    } else {
+                        $response = array(
+                            'result' => self::EXIT_CODE['notFound'],
+                            'desc' => 'Không tồn tại topic',
+                        );
+                    }
+                }
+            }
+        }
+
+        $this->response = $response;
+
+        return $this;
+    }
+
 }

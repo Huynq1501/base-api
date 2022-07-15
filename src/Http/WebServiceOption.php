@@ -212,7 +212,6 @@ class WebServiceOption extends BaseHttp
 
         }
 
-
         $this->response = $response;
 
         return $this;
@@ -261,7 +260,7 @@ class WebServiceOption extends BaseHttp
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notFound'],
-                            'desc' => 'Không tồn tại config',
+                            'desc' => 'Không tồn tại option',
                         );
                     }
                 }
