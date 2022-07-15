@@ -8,7 +8,7 @@
  * Time: 00:19
  */
 
-use nguyenanhung\Backend\BaseAPI\Http\WebServiceTopic;
+use nguyenanhung\Backend\BaseAPI\Http\WebServiceCategory;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -39,13 +39,23 @@ $config = [
 ];
 
 $inputData = [
-    'id' => 9,
+    'id' => 302,
+    'status'=>22,
     'name' => 'xin chào mọi người',
-    'tittle' => 'topic tittle nè hehe hehe',
-    'keywords' => 'topic 1, topic_1',
-    'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
+    'title' => 'category demo',
+//    'language'=>'',
+//    'description' => 'description category',
+//    'keywords'=>'keyword category',
+//    'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
+    'parent' => 302,
+    'order_status' => 123,
+//    'show_top' => 1,
+//    'show_home' => 1,
+//    'show_right' => 1,
+    'show_bottom' => 1,
+    'level' => 22,
     'username' => 'hippo_push',
-    'signature' => '7dd8e6dbb9e834f3acc62b2c8357ae8d'
+    'signature' => '2006b0dac19d40e01a6ce3f6432f9ca0'
 ];
 
 $listData = [
@@ -56,28 +66,29 @@ $listData = [
 ];
 
 $showData = [
-    'id' => 9,
+    'id' => 303,
     'username' => 'hippo_push',
-    'signature' => '5599b81fd17b25d0cc75d65b73c646a5'
+    'signature' => '833d0a630d08a8b669ed93732342228a'
 ];
 
 //api  create or update
-//$api = new WebServiceTopic($config['OPTIONS']);
+//$api = new WebServiceCategory($config['OPTIONS']);
 //$api->setSdkConfig($config);
 //$api->setInputData($inputData)
 //    ->createOrUpdate();
 
-//api list
-//$api = new WebServiceTopic($config['OPTIONS']);
+////api list
+//$api = new WebServiceCategory($config['OPTIONS']);
 //$api->setSdkConfig($config);
 //$api->setInputData($listData)
 //    ->list();
 
 //api show
-$api = new WebServiceTopic($config['OPTIONS']);
+$api = new WebServiceCategory($config['OPTIONS']);
 $api->setSdkConfig($config);
 $api->setInputData($showData)
     ->show();
+
 echo "<pre>";
 print_r($api->getResponse());
 echo "</pre>";
