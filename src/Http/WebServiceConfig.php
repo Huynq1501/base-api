@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 
 /**
  * Class WebServiceAccount
@@ -16,23 +15,11 @@ class WebServiceConfig extends BaseHttp
 {
     protected const API_NAME = 'config';
 
-    public const TYPE = array(
+    protected const TYPE = array(
         'string' => 0,
         'number' => 1,
         'json' => 2,
     );
-
-    public const STATUS = array(
-        'deactivate' => 0,
-        'active' => 1,
-    );
-
-    public const PAGINATE = array(
-        'page_number' => 1,
-        'number_of_records' => 10,
-    );
-
-    protected $slug;
 
     /**
      * WebServiceConfig constructor.
@@ -46,7 +33,6 @@ class WebServiceConfig extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
     protected function formatType($inputData = array()): int

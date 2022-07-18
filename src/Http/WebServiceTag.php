@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 use nguyenanhung\Classes\Helper\UUID;
 
 /**
@@ -20,11 +19,6 @@ class WebServiceTag extends BaseHttp
         'active' => 1,
     );
 
-    public const PAGINATE = array(
-        'page_number' => 1,
-        'number_of_records' => 10,
-    );
-
     public const IS_HOT = array(
         'normal' => 0,
         'hot' => 1,
@@ -33,8 +27,6 @@ class WebServiceTag extends BaseHttp
     protected const API_NAME = 'tag';
 
     public const DEFAULT_LANGUAGE = 'vietnamese';
-
-    protected $slug;
 
     /**
      * WebServiceOption constructor.
@@ -48,7 +40,6 @@ class WebServiceTag extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
     protected function formatIsHot($inputData = array()): int
@@ -60,19 +51,9 @@ class WebServiceTag extends BaseHttp
         return 0;
     }
 
-    protected function formatSlug($inputData = array()): string
-    {
-        if (isset($inputData['slugs']) && $inputData['slugs'] != null) {
-            $slug = $this->inputData['slugs'];
-        } else {
-            $slug = $this->inputData['name'];
-        }
-        return $this->slug->convertVietnameseToEnglish($slug);
-    }
-
     protected function formatPhoto($inputData = array())
     {
-        if (isset($inputData['photo']) && $inputData['photo'] != null) {
+        if (isset($inputData['photo'])) {
             return json_encode(
                 [
                     'photo' => $inputData['photo']
@@ -98,7 +79,7 @@ class WebServiceTag extends BaseHttp
             $status = $this->formatStatus($this->inputData);
             $isHot = $this->formatIsHot($this->inputData);
             $name = $this->inputData['name'] ?? null;
-            $slugs = $this->formatSlug($this->inputData);
+            $slugs = $this->slug->slugify($this->formatInput('slugs','name'));
             $language = $this->inputData['language'] ?? self::DEFAULT_LANGUAGE;
             $keywords = $this->formatInput('keywords', 'name');
             $title = $this->formatInput('title', 'name');
