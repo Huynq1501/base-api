@@ -11,47 +11,22 @@
 use nguyenanhung\Backend\BaseAPI\Http\WebServiceCategory;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-
-$config = [
-    'DATABASE' => [
-        'driver' => 'mysql',
-        'host' => '127.0.0.1',
-        'username' => 'root',
-        'password' => '150115',
-        'database' => 'base_api',
-        'port' => 3306,
-        'prefix' => 'tnv_',
-        'charset' => 'utf8',
-        'collation' => 'utf8_unicode_ci',
-    ],
-    'OPTIONS' => [
-        'showSignature' => true,
-        'debugStatus' => true,
-        'debugLevel' => 'error',
-        'loggerPath' => __DIR__ . '/../tmp/logs/',
-        // Cache
-        'cachePath' => __DIR__ . '/../tmp/cache/',
-        'cacheTtl' => 3600,
-        'cacheDriver' => 'files',
-        'cacheFileDefaultChmod' => 0777,
-        'cacheSecurityKey' => 'BACKEND-SERVICE',
-    ]
-];
+$config = require __DIR__.'/../config.php';
 
 $inputData = [
     'id' => 302,
     'status'=>22,
     'name' => 'xin chào mọi người',
     'title' => 'category demo',
-//    'language'=>'',
-//    'description' => 'description category',
-//    'keywords'=>'keyword category',
-//    'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
+    'language'=>'',
+    'description' => 'description category',
+    'keywords'=>'keyword category',
+    'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
     'parent' => 302,
     'order_status' => 123,
-//    'show_top' => 1,
-//    'show_home' => 1,
-//    'show_right' => 1,
+    'show_top' => 1,
+    'show_home' => 1,
+    'show_right' => 1,
     'show_bottom' => 1,
     'level' => 22,
     'username' => 'hippo_push',
@@ -66,9 +41,9 @@ $listData = [
 ];
 
 $showData = [
-    'id' => 303,
+    'id' => 301,
     'username' => 'hippo_push',
-    'signature' => '833d0a630d08a8b669ed93732342228a'
+    'signature' => '1fe02087bf04f957c3cc6c077e357102'
 ];
 
 //api  create or update
