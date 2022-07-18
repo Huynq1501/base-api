@@ -80,7 +80,6 @@ class BaseHttp extends BaseCore
         $this->logger->setLoggerSubPath(__CLASS__);
         $this->db = new Database($options);
         $this->slug = new SlugUrl();
-
     }
 
     protected function formatInputStartDate($inputData = array())

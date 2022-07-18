@@ -18,13 +18,8 @@ class WebServiceCategory extends BaseHttp
 
     public const STATUS_LEVEL = array(0, 1);
 
-    public const PAGINATE = array(
-        'page_number' => 1,
-        'number_of_records' => 10,
-    );
-
-    public const DEFAULT_ORDER_STATUS = 0;
-    public const DEFAULT_LANGUAGE = 'vietnamese';
+    protected const DEFAULT_ORDER_STATUS = 0;
+    protected const DEFAULT_LANGUAGE = 'vietnamese';
 
     /**
      * WebServiceOption constructor.
@@ -40,7 +35,7 @@ class WebServiceCategory extends BaseHttp
         $this->logger->setLoggerSubPath(__CLASS__);
     }
 
-    public function formatParentID($inputData = array()): int
+    protected function formatParentID($inputData = array()): int
     {
         if (isset($inputData['parent']) && is_int($inputData['parent'])) {
             $checkExits = $this->db->checkCategoryExists(
@@ -55,16 +50,7 @@ class WebServiceCategory extends BaseHttp
         return 0;
     }
 
-    public function formatOrderStatus($inputData = array())
-    {
-        if (isset($inputData['order_status']) && is_int($inputData['order_status'])) {
-            return $this->inputData['order_status'];
-        }
-
-        return self::DEFAULT_ORDER_STATUS;
-    }
-
-    public function createOrUpdate(): WebServiceCategory
+    public function createOrUpdate(): int
     {
         $required = ['name', 'title', 'parent'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
@@ -83,7 +69,7 @@ class WebServiceCategory extends BaseHttp
             $title = $this->inputData['title'] ?? null;
             $description = $this->slug->slugify($this->formatInput('description', 'title'));
             $keywords = $this->slug->slugify($this->formatInput('keywords', 'title'));
-            $orderStatus = (isset($this->inputData['order_status']) && is_int($this->inputData['order_status'])) ? $this->formatOrderStatus($this->inputData) : 0;
+            $orderStatus = (isset($this->inputData['order_status']) || !is_int($this->inputData['order_status'])) ? $this->inputData['order_status'] : self::DEFAULT_ORDER_STATUS;
             $parent = $this->formatParentID($this->inputData);
             $photo = $this->inputData['photo'] ?? null;
             $username = $this->formatInputUsername($this->inputData);
@@ -142,7 +128,7 @@ class WebServiceCategory extends BaseHttp
                             if ($result) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => self::ACTION['update'].' '.self::API_NAME . ' - '. self::MESSAGES['success'] ,
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                     'update_id' => $id,
                                 );
                             } else {
@@ -168,13 +154,13 @@ class WebServiceCategory extends BaseHttp
                         if ($id > 0) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' =>  self::ACTION['create'].' '.self::API_NAME . ' - '. self::MESSAGES['success'],
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                 'insert_id' => $id,
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => self::ACTION['create'].' '.self::API_NAME . ' - '. self::MESSAGES['failed'],
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
                                 'inputData' => $this->inputData,
                             );
                         }

@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 use nguyenanhung\Classes\Helper\UUID;
 
 /**
@@ -22,7 +21,6 @@ class WebServiceTopic extends BaseHttp
     public const DEFAULT_LANGUAGE = 'vietnamese';
 
     protected const API_NAME = 'topic';
-    protected $slug;
 
     /**
      * WebServiceOption constructor.
@@ -36,7 +34,6 @@ class WebServiceTopic extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
     protected function formatIsHot($inputData = array()): int
@@ -50,7 +47,7 @@ class WebServiceTopic extends BaseHttp
 
     protected function formatPhoto($inputData = array())
     {
-        if (isset($inputData['photo']) && $inputData['photo'] != null) {
+        if (isset($inputData['photo'])) {
             return json_encode(
                 [
                     'photo' => $inputData['photo']
