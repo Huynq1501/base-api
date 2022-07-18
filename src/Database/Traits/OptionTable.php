@@ -99,7 +99,9 @@ trait OptionTable
                     'value' => $data['id']
                 ]
             ],
-            'id','array',['id','name','value','status']);
+            'id',
+            'array',
+            ['id','name','value','status']);
 
         $DB->disconnect();
 

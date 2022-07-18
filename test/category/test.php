@@ -14,15 +14,15 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__.'/../config.php';
 
 $inputData = [
-    'id' => 302,
-    'status'=>22,
+    'id' => 301,
+    'status'=>1,
     'name' => 'xin chào mọi người',
     'title' => 'category demo',
     'language'=>'',
     'description' => 'description category',
     'keywords'=>'keyword category',
     'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
-    'parent' => 302,
+    'parent' => 301,
     'order_status' => 123,
     'show_top' => 1,
     'show_home' => 1,
@@ -30,39 +30,39 @@ $inputData = [
     'show_bottom' => 1,
     'level' => 22,
     'username' => 'hippo_push',
-    'signature' => '2006b0dac19d40e01a6ce3f6432f9ca0'
+    'signature' => '30e09ad584f160388379b0d31226f1e9'
 ];
 
 $listData = [
     'page_number' => 1,
-    'number_record_of_pages' => 4,
+    'max_results' => 4,
     'username' => 'hippo_push',
-    'signature' => 'c525b0327d09be071ecb8733b0553b07'
+    'signature' => '073f5afed56bb19a656e34d5020cc63f'
 ];
 
 $showData = [
-    'id' => 301,
+    'id' => 304,
     'username' => 'hippo_push',
-    'signature' => '1fe02087bf04f957c3cc6c077e357102'
+    'signature' => '76c366b45b7a34ffec59bc9df17e4c3d'
 ];
 
-//api  create or update
+////api  create or update
 //$api = new WebServiceCategory($config['OPTIONS']);
 //$api->setSdkConfig($config);
 //$api->setInputData($inputData)
 //    ->createOrUpdate();
 
-////api list
-//$api = new WebServiceCategory($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($listData)
-//    ->list();
-
-//api show
+//api list
 $api = new WebServiceCategory($config['OPTIONS']);
 $api->setSdkConfig($config);
-$api->setInputData($showData)
-    ->show();
+$api->setInputData($listData)
+    ->list();
+
+////api show
+//$api = new WebServiceCategory($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($showData)
+//    ->show();
 
 echo "<pre>";
 print_r($api->getResponse());

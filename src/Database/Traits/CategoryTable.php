@@ -91,7 +91,7 @@ trait CategoryTable
     {
         $DB = $this->categoryTable();
         //show result
-        $result = $DB->getResult(
+        $result = $DB->getInfo(
             [
                 'id' => [
                     'field' => 'id',
@@ -99,7 +99,9 @@ trait CategoryTable
                     'value' => $data['id']
                 ]
             ],
-            '*');
+            'id',
+            'array',
+            ['id','uuid','name','language','slugs','title','description','keywords','photo','parent','order_stt']);
 
         $DB->disconnect();
 

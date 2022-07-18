@@ -14,14 +14,14 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__.'/../config.php';
 
 $inputData = [
-    'id' => 'company_name',
+    'id' => 'company name 1',
     'language' => 'vietnamese',
-    'value' => 31111,
+    'value' => 'hehehehehe',
     'label' => 'abc',
-    'type' => 2,
+    'type' => 1,
     'status' => 1,
     'username'=>'hippo_push',
-    'signature'=>'8eb1e73941faa30b18352c8e0cc218e7'
+    'signature'=>'6dd3b9a04f625857baac2667f9792aa5'
 ];
 
 $showData = [
@@ -34,15 +34,15 @@ $showData = [
 $listData = [
     'category' => 'site',
     'page_number' => 2,
-    'number_record_of_pages' => 4,
+    'max_results' => 4,
     'username'=>'hippo_push',
     'signature'=>'94426fe48898d120d14c300279ee454a'
 ];
-//api list
-$api = new WebServiceConfig($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($listData)
-    ->list();
+////api list
+//$api = new WebServiceConfig($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($listData)
+//    ->list();
 
 //api show
 //$api = new WebServiceConfig($config['OPTIONS']);
@@ -50,11 +50,11 @@ $api->setInputData($listData)
 //$api->setInputData($showData)
 //    ->show();
 
-////api  create or update
-//$api = new WebServiceConfig($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//api  create or update
+$api = new WebServiceConfig($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 
 echo "<pre>";
