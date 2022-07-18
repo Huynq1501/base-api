@@ -7,21 +7,28 @@ use nguyenanhung\Libraries\Slug\SlugUrl;
 use nguyenanhung\Classes\Helper\UUID;
 
 /**
- * Class WebServiceCategory
+ * Class WebServiceTag
  *
  * @package   nguyenanhung\Backend\BaseAPI\Http
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
-class WebServiceCategory extends BaseHttp
+class WebServiceTag extends BaseHttp
 {
-    public const STATUS_LEVEL = array(0, 1);
+    public const STATUS = array(
+        'deactivate' => 0,
+        'active' => 1,
+    );
 
     public const PAGINATE = array(
         'page_number' => 1,
         'number_of_records' => 10,
     );
 
+    public const IS_HOT = array(
+        'normal' => 0,
+        'hot' => 1,
+    );
     public const DEFAULT_LANGUAGE = 'vietnamese';
 
     protected $slug;
@@ -41,16 +48,25 @@ class WebServiceCategory extends BaseHttp
         $this->slug = new SlugUrl();
     }
 
-    function formatStatusAndLevel($inputData = array(), $field): int
+    protected function formatStatus($inputData = array()): int
     {
-        if (isset($inputData[$field]) && in_array($inputData[$field], self::STATUS_LEVEL, true)) {
-            return $inputData[$field];
+        if (isset($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
+            return $inputData['status'];
         }
 
         return 1;
     }
 
-    function formatLanguage($inputData = array())
+    protected function formatIsHot($inputData = array()): int
+    {
+        if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT, true)) {
+            return $inputData['is_hot'];
+        }
+
+        return 0;
+    }
+
+    protected function formatLanguage($inputData = array())
     {
         if (isset($inputData['language']) && $inputData['language'] != null) {
             return $inputData['language'];
@@ -59,22 +75,16 @@ class WebServiceCategory extends BaseHttp
         return self::DEFAULT_LANGUAGE;
     }
 
-    function formatParentID($inputData = array()): int
+    protected function formatByField($inputData = array(), $field)
     {
-        if (isset($inputData['parent']) && $inputData['parent'] != null && is_int($inputData['parent'])) {
-            $checkExits = $this->db->checkCategoryExists(
-                [
-                    'id' => $inputData['parent']
-                ]
-            );
-            if ($checkExits = 1) {
-                return $inputData['parent'];
-            }
+        if (isset($inputData[$field]) && $inputData[$field] != null) {
+            return $this->inputData[$field];
         }
-        return 0;
+
+        return $this->inputData['name'];
     }
 
-    function formatPageNumber($inputData = array())
+    protected function formatPageNumber($inputData = array())
     {
         if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
             return $inputData['page_number'];
@@ -83,7 +93,7 @@ class WebServiceCategory extends BaseHttp
         return self::PAGINATE['page_number'];
     }
 
-    function formatSlug($inputData = array()): string
+    protected function formatSlug($inputData = array()): string
     {
         if (isset($inputData['slugs']) && $inputData['slugs'] != null) {
             $slug = $this->inputData['slugs'];
@@ -93,39 +103,25 @@ class WebServiceCategory extends BaseHttp
         return $this->slug->convertVietnameseToEnglish($slug);
     }
 
-    /**
-     * @param array $inputData
-     * @param $field
-     * @return mixed
-     */
-    function formatDescriptionAndKeywords(array $inputData = array(), $field)
+    protected function formatDescription($inputData = array())
     {
-        if (isset($inputData[$field]) && $inputData[$field] != null) {
-            return $this->inputData[$field];
+        if (isset($inputData['description']) && $inputData['description'] != null) {
+            return $this->inputData['description'];
         }
 
-        return $this->inputData['title'];
+        return $this->inputData['tittle'];
     }
 
-    function formatShow(array $inputData = array(), $field)
+    protected function formatContent($inputData = array())
     {
-        if (isset($inputData[$field]) && $inputData[$field] != null && in_array($inputData[$field], self::STATUS_LEVEL)) {
-            return $this->inputData[$field];
+        if (isset($inputData['content']) && $inputData['content'] != null) {
+            return $this->inputData['content'];
         }
 
-        return 0;
+        return $this->inputData['tittle'];
     }
 
-    function formatOrderStatus($inputData = array())
-    {
-        if (isset($inputData['order_status']) && $inputData['order_status'] != null && is_int($inputData['order_status'])) {
-            return $this->inputData['order_status'];
-        }
-
-        return 0;
-    }
-
-    function formatNumberRecordOfPage($inputData = array())
+    protected function formatNumberRecordOfPage($inputData = array())
     {
         if (isset($inputData['number_record_of_pages']) && $inputData['number_record_of_pages'] > 0) {
             return $inputData['number_record_of_pages'];
@@ -134,9 +130,22 @@ class WebServiceCategory extends BaseHttp
         return self::PAGINATE['number_record_of_pages'];
     }
 
-    public function createOrUpdate(): WebServiceCategory
+    protected function formatPhoto($inputData = array())
     {
-        $required = ['name', 'title', 'parent'];
+        if (isset($inputData['photo']) && $inputData['photo'] != null) {
+            return json_encode(
+                [
+                    'photo' => $inputData['photo']
+                ]
+            );
+        }
+
+        return null;
+    }
+
+    public function createOrUpdate(): WebServiceTag
+    {
+        $required = ['name', 'photo'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
 
         if ($filter === false) {
@@ -146,25 +155,19 @@ class WebServiceCategory extends BaseHttp
                 'inputData' => $this->inputData
             );
         } else {
-            $status = $this->formatStatusAndLevel($this->inputData, 'status');
+            $status = $this->formatStatus($this->inputData);
+            $isHot = $this->formatIsHot($this->inputData);
             $name = $this->inputData['name'] ?? null;
             $slugs = $this->formatSlug($this->inputData);
             $language = $this->formatLanguage($this->inputData);
-            $title = $this->inputData['title'] ?? null;
-            $description = $this->formatDescriptionAndKeywords($this->inputData, 'description');
-            $keywords = $this->formatDescriptionAndKeywords($this->inputData, 'keywords');
-            $oderStatus = $this->formatOrderStatus($this->inputData);
-            $parent = $this->formatParentID($this->inputData);
-            $photo = $this->inputData['photo'] ?? null;
+            $keywords = $this->formatByField($this->inputData, 'keywords');
+            $title = $this->formatByField($this->inputData, 'title');
+            $description = $this->formatByField($this->inputData, 'description');
+            $photo = $this->formatPhoto($this->inputData);
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
-            $showTop = $this->formatShow($this->inputData, 'show_top');
-            $showHome = $this->formatShow($this->inputData, 'show_home');
-            $showRight = $this->formatShow($this->inputData, 'show_right');
-            $showBottom = $this->formatShow($this->inputData, 'show_bottom');
-            $level = $this->formatStatusAndLevel($this->inputData, 'level');
 
-            if (empty($name) || empty($title) || empty($keywords) || empty($description) || empty($signature) || empty($username)) {
+            if (empty($name) || empty($slugs) || empty($language) || empty($title) || empty($keywords) || empty($photo) || empty($description) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => 'Sai hoac thieu tham so.',
@@ -173,7 +176,7 @@ class WebServiceCategory extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($name . '$' . $title . '$' . $keywords . '$' . $description . '$' . $parent . '$' . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($name . '$' . $language . '$' . $title . '$' . $keywords . '$' . $photo . '$' . $username . "$" . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -185,34 +188,31 @@ class WebServiceCategory extends BaseHttp
                     $data = array(
                         'uuid' => UUID::v4(),
                         'status' => $status,
+                        'is_hot' => $isHot,
                         'name' => $name,
-                        'language' => $language,
                         'slugs' => $slugs,
+                        'language' => $language,
                         'title' => $title,
                         'description' => $description,
                         'keywords' => $keywords,
                         'photo' => $photo,
-                        'parent'=>$parent,
-                        'order_stt'=>$oderStatus,
-                        'show_top'=>$showTop,
-                        'show_home'=>$showHome,
-                        'show_right'=>$showRight,
-                        'show_bottom'=>$showBottom,
-                        'level'=>$level,
                     );
 
                     if (isset($this->inputData['id'])) {
-                        $id = $this->inputData['id'] ;
-                        
-                        $checkCategoryExits = $this->db->checkCategoryExists(['id'=>$id]);
-                        if ($checkCategoryExits) {
+                        $id = $this->inputData['id'] ?? null;
+
+                        $wheres = array(
+                            'id' => $id,
+                        );
+                        $checkTagExits = $this->db->checkTagExists($wheres);
+                        if ($checkTagExits) {
                             $data['id'] = $id;
                             $data['updated_at'] = date("Y/m/d H:i:s");
-                            $result = $this->db->updateCategory($data);
+                            $result = $this->db->updateTag($data);
                             if ($result) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => 'Đã ghi nhận update category thành công',
+                                    'desc' => 'Đã ghi nhận update tag thành công',
                                     'update_id' => $id,
                                 );
                             } else {
@@ -224,26 +224,29 @@ class WebServiceCategory extends BaseHttp
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Không tồn tại category',
+                                'desc' => 'Không tồn tại tag',
                                 'data' => $this->inputData,
                             );
                         }
                     } else {
                         $data['created_at'] = date("Y/m/d H:i:s");
-                        //Đoạn này db đang k cho updated_at null , em k rõ là a quên chỉnh hay nó có ý nghĩa gì đó=> em pdate sau
-                        $data['updated_at'] = date("Y/m/d H:i:s");
-                        $id = $this->db->createCategory($data);
+                        $data['view_total'] = 0;
+                        $data['view_day'] = 0;
+                        $data['view_week'] = 0;
+                        $data['view_month'] = 0;
+                        $data['view_year'] = 0;
+                        $id = $this->db->createTag($data);
 
                         if ($id > 0) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Đã ghi nhận category thành công',
+                                'desc' => 'Đã ghi nhận tag thành công',
                                 'insert_id' => $id,
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Ghi nhận category thất bại',
+                                'desc' => 'Ghi nhận tag thất bại',
                                 'inputData' => $this->inputData,
                             );
                         }
@@ -259,7 +262,7 @@ class WebServiceCategory extends BaseHttp
 
     }
 
-    public function list(): WebServiceCategory
+    public function list(): WebServiceTag
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
         $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
@@ -287,11 +290,11 @@ class WebServiceCategory extends BaseHttp
                     'pageNumber' => $pageNumber,
                     'numberRecordOfPage' => $numberRecordOfPage,
                 );
-                $listConfig = $this->db->listCategory($data);
+                $listConfig = $this->db->listTag($data);
 
                 $response = array(
                     'result' => self::EXIT_CODE['success'],
-                    'desc' => 'Danh sách category',
+                    'desc' => 'Danh sách tag',
                     'data' => $listConfig,
                 );
             }
@@ -303,7 +306,7 @@ class WebServiceCategory extends BaseHttp
         return $this;
     }
 
-    public function show(): WebServiceCategory
+    public function show(): WebServiceTag
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
 
@@ -335,18 +338,18 @@ class WebServiceCategory extends BaseHttp
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
-                    $result = $this->db->showCategory(array('id' => $id));
+                    $result = $this->db->showTag(array('id' => $id));
 
                     if ($result->count() === 1) {
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Đã nhận category thành công',
+                            'desc' => 'Đã nhận tag thành công',
                             'data' => json_encode($result[0]),
                         );
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notFound'],
-                            'desc' => 'Không tồn tại category',
+                            'desc' => 'Không tồn tại tag',
                         );
                     }
                 }
