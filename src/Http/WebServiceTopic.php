@@ -15,22 +15,13 @@ use nguyenanhung\Classes\Helper\UUID;
  */
 class WebServiceTopic extends BaseHttp
 {
-    public const STATUS = array(
-        'deactivate' => 0,
-        'active' => 1,
-    );
-
-    public const PAGINATE = array(
-        'page_number' => 1,
-        'number_of_records' => 10,
-    );
-
     public const IS_HOT = array(
         'normal' => 0,
         'hot' => 1,
     );
     public const DEFAULT_LANGUAGE = 'vietnamese';
 
+    protected const API_NAME = 'topic';
     protected $slug;
 
     /**
@@ -48,15 +39,6 @@ class WebServiceTopic extends BaseHttp
         $this->slug = new SlugUrl();
     }
 
-    protected function formatStatus($inputData = array()): int
-    {
-        if (isset($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
-            return $inputData['status'];
-        }
-
-        return 1;
-    }
-
     protected function formatIsHot($inputData = array()): int
     {
         if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT, true)) {
@@ -66,54 +48,7 @@ class WebServiceTopic extends BaseHttp
         return 0;
     }
 
-    function formatPageNumber($inputData = array())
-    {
-        if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
-            return $inputData['page_number'];
-        }
-
-        return self::PAGINATE['page_number'];
-    }
-
-    function formatSlug($inputData = array()): string
-    {
-        if (isset($inputData['slugs']) && $inputData['slugs'] != null) {
-            $slug = $this->inputData['slugs'];
-        } else {
-            $slug = $this->inputData['tittle'];
-        }
-        return $this->slug->convertVietnameseToEnglish($slug);
-    }
-
-    function formatDescription($inputData = array())
-    {
-        if (isset($inputData['description']) && $inputData['description'] != null) {
-            return $this->inputData['description'];
-        }
-
-        return $this->inputData['tittle'];
-    }
-
-    function formatContent($inputData = array())
-    {
-        if (isset($inputData['content']) && $inputData['content'] != null) {
-            return $this->inputData['content'];
-        }
-
-        return $this->inputData['tittle'];
-    }
-
-
-    function formatNumberRecordOfPage($inputData = array())
-    {
-        if (isset($inputData['number_record_of_pages']) && $inputData['number_record_of_pages'] > 0) {
-            return $inputData['number_record_of_pages'];
-        }
-
-        return self::PAGINATE['number_record_of_pages'];
-    }
-
-    function formatPhoto($inputData = array())
+    protected function formatPhoto($inputData = array())
     {
         if (isset($inputData['photo']) && $inputData['photo'] != null) {
             return json_encode(
@@ -134,27 +69,27 @@ class WebServiceTopic extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
             $status = $this->formatStatus($this->inputData);
             $isHot = $this->formatIsHot($this->inputData);
-            $name = $this->inputData['name'];
-            $slugs = $this->formatSlug($this->inputData);
+            $name = $this->inputData['name'] ?? null;
+            $slugs = $this->slug->slugify($this->formatInput('slugs', 'tittle'));
             $language = $this->inputData['language'] ?? self::DEFAULT_LANGUAGE;
             $tittle = $this->inputData['tittle'] ?? null;
             $keywords = $this->inputData['keywords'] ?? null;
-            $description = $this->formatDescription($this->inputData);
-            $content = $this->formatContent($this->inputData);
+            $description = $this->formatInput('description', 'tittle');
+            $content = $this->formatInput('content', 'tittle');
             $photo = $this->formatPhoto($this->inputData);
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
 
-            if (empty($name) || empty($slugs) || empty($language) || empty($tittle) || empty($keywords) || empty($photo) || empty($description) || empty($content) || empty($signature) || empty($username)) {
+            if (empty($name) || $status === null || empty($slugs) || empty($language) || empty($tittle) || empty($keywords) || empty($photo) || empty($description) || empty($content) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -165,7 +100,7 @@ class WebServiceTopic extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
@@ -197,19 +132,19 @@ class WebServiceTopic extends BaseHttp
                             if ($result) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => 'Đã ghi nhận update topic thành công',
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                     'update_id' => $id,
                                 );
                             } else {
                                 $response = array(
-                                    'result' => self::EXIT_CODE['notFound'],
-                                    'desc' => 'Không có gì thay đổi',
+                                    'result' => self::EXIT_CODE['notChange'],
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notChange'],
                                 );
                             }
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Không tồn tại topic',
+                                'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notFound'],
                                 'data' => $this->inputData,
                             );
                         }
@@ -226,13 +161,13 @@ class WebServiceTopic extends BaseHttp
                         if ($id > 0) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Đã ghi nhận topic thành công',
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                 'insert_id' => $id,
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Ghi nhận topic thất bại',
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
                                 'inputData' => $this->inputData,
                             );
                         }
@@ -240,7 +175,7 @@ class WebServiceTopic extends BaseHttp
                 }
             }
         }
-        $this->logger->info('WebConfig.createOrUpdate',
+        $this->logger->info('WebTopic.createOrUpdate',
             'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
@@ -251,14 +186,14 @@ class WebServiceTopic extends BaseHttp
     public function list(): WebServiceTopic
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
-        $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+        $numberRecordOfPage = $this->formatMaxResult($this->inputData);
         $username = $this->formatInputUsername($this->inputData);
         $signature = $this->formatInputSignature($this->inputData);
 
         if (empty($signature) || empty($username)) {
             $response = array(
                 'result' => self::EXIT_CODE['paramsIsEmpty'],
-                'desc' => 'Sai hoac thieu tham so.',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -268,7 +203,7 @@ class WebServiceTopic extends BaseHttp
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
                     'result' => self::EXIT_CODE['invalidSignature'],
-                    'desc' => 'Sai chu ky xac thuc.',
+                    'desc' => self::MESSAGES['invalidSignature'],
                     'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                 );
             } else {
@@ -280,13 +215,14 @@ class WebServiceTopic extends BaseHttp
 
                 $response = array(
                     'result' => self::EXIT_CODE['success'],
-                    'desc' => 'Danh sách topic',
+                    'desc' => self::ACTION['getAll'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                     'data' => $listConfig,
                 );
             }
 
         }
-
+        $this->logger->info('WebTopic.list',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
         return $this;
@@ -299,7 +235,7 @@ class WebServiceTopic extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -309,7 +245,7 @@ class WebServiceTopic extends BaseHttp
             if (empty($id) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -320,28 +256,29 @@ class WebServiceTopic extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
                     $result = $this->db->showTopic(array('id' => $id));
 
-                    if ($result->count() === 1) {
+                    if ($result) {
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Đã nhận topic thành công',
-                            'data' => json_encode($result[0]),
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                            'data' => json_encode($result),
                         );
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notFound'],
-                            'desc' => 'Không tồn tại topic',
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notFound'],
                         );
                     }
                 }
             }
         }
-
+        $this->logger->info('WebTopic.show',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
         return $this;

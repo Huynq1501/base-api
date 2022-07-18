@@ -14,15 +14,7 @@ use nguyenanhung\Libraries\Slug\SlugUrl;
  */
 class WebServiceOption extends BaseHttp
 {
-    public const STATUS = array(
-        'deactivate' => 0,
-        'active' => 1,
-    );
-
-    public const PAGINATE = array(
-        'page_number' => 1,
-        'number_of_records' => 10,
-    );
+    protected const API_NAME = 'option';
 
     protected $slug;
 
@@ -41,42 +33,15 @@ class WebServiceOption extends BaseHttp
         $this->slug = new SlugUrl();
     }
 
-    protected function formatStatus($inputData = array()): int
-    {
-        if (in_array($inputData['status'], self::STATUS, true)) {
-            return $inputData['status'];
-        }
-
-        return 1;
-    }
-
-    public function formatPageNumber($inputData = array())
-    {
-        if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
-            return $inputData['page_number'];
-        }
-
-        return self::PAGINATE['page_number'];
-    }
-
-    public function formatNumberRecordOfPage($inputData = array())
-    {
-        if (isset($inputData['number_record_of_pages']) && $inputData['number_record_of_pages'] > 0) {
-            return $inputData['number_record_of_pages'];
-        }
-
-        return self::PAGINATE['number_record_of_pages'];
-    }
-
     public function createOrUpdate(): WebServiceOption
     {
-        $required = ['name', 'value'];
+        $required = ['name', 'value','status'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
 
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -89,7 +54,7 @@ class WebServiceOption extends BaseHttp
             if (empty($name) || empty($status) || empty($value) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -100,7 +65,7 @@ class WebServiceOption extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
@@ -121,7 +86,7 @@ class WebServiceOption extends BaseHttp
                         if ($filter === false) {
                             $response = array(
                                 'result' => self::EXIT_CODE['invalidParams'],
-                                'desc' => 'sai hoặc thiếu tham số',
+                                'desc' => self::MESSAGES['invalidParams'],
                                 'inputData' => $this->inputData
                             );
                         } else {
@@ -132,13 +97,14 @@ class WebServiceOption extends BaseHttp
                             if ($result) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => 'Đã ghi nhận update option thành công',
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                     'update_id' => $id,
                                 );
                             } else {
                                 $response = array(
-                                    'result' => self::EXIT_CODE['success'],
-                                    'desc' => 'Không có gì thay đổi',
+                                    'result' => self::EXIT_CODE['notFound'],
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
+                                    'data' => $this->inputData
                                 );
                             }
                         }
@@ -149,17 +115,16 @@ class WebServiceOption extends BaseHttp
                         if ($id > 0) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Đã ghi nhận option thành công',
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                 'insert_id' => $id,
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Ghi nhận option thất bại',
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
                                 'insert_id' => $id,
                             );
                         }
-
                     }
                 }
             }
@@ -176,14 +141,14 @@ class WebServiceOption extends BaseHttp
     {
 
         $pageNumber = $this->formatPageNumber($this->inputData);
-        $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+        $numberRecordOfPage = $this->formatMaxResult($this->inputData);
         $username = $this->formatInputUsername($this->inputData);
         $signature = $this->formatInputSignature($this->inputData);
 
         if (empty($signature) || empty($username)) {
             $response = array(
                 'result' => self::EXIT_CODE['paramsIsEmpty'],
-                'desc' => 'Sai hoac thieu tham so.',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -193,7 +158,7 @@ class WebServiceOption extends BaseHttp
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
                     'result' => self::EXIT_CODE['invalidSignature'],
-                    'desc' => 'Sai chu ky xac thuc.',
+                    'desc' => self::MESSAGES['invalidSignature'],
                     'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                 );
             } else {
@@ -205,7 +170,7 @@ class WebServiceOption extends BaseHttp
 
                 $response = array(
                     'result' => self::EXIT_CODE['success'],
-                    'desc' => 'Danh sách config',
+                    'desc' => self::ACTION['getAll'] . ' ' . self::API_NAME . '-' . self::MESSAGES['success'],
                     'data' => $listConfig,
                 );
             }
@@ -224,7 +189,7 @@ class WebServiceOption extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -234,7 +199,7 @@ class WebServiceOption extends BaseHttp
             if (empty($id) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -245,17 +210,17 @@ class WebServiceOption extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
-                    $result = $this->db->showOption(array('id'=>$id));
+                    $result = $this->db->showOption(array('id' => $id));
 
-                    if ($result->count() === 1) {
+                    if ($result) {
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
                             'desc' => 'Đã nhận option thành công',
-                            'data' => json_encode($result[0]),
+                            'data' => json_encode($result),
                         );
                     } else {
                         $response = array(

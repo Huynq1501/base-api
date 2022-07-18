@@ -11,73 +11,50 @@
 use nguyenanhung\Backend\BaseAPI\Http\WebServiceTopic;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-
-$config = [
-    'DATABASE' => [
-        'driver' => 'mysql',
-        'host' => '127.0.0.1',
-        'username' => 'root',
-        'password' => '150115',
-        'database' => 'base_api',
-        'port' => 3306,
-        'prefix' => 'tnv_',
-        'charset' => 'utf8',
-        'collation' => 'utf8_unicode_ci',
-    ],
-    'OPTIONS' => [
-        'showSignature' => true,
-        'debugStatus' => true,
-        'debugLevel' => 'error',
-        'loggerPath' => __DIR__ . '/../tmp/logs/',
-        // Cache
-        'cachePath' => __DIR__ . '/../tmp/cache/',
-        'cacheTtl' => 3600,
-        'cacheDriver' => 'files',
-        'cacheFileDefaultChmod' => 0777,
-        'cacheSecurityKey' => 'BACKEND-SERVICE',
-    ]
-];
+$config = require __DIR__ . '/../config.php';
 
 $inputData = [
-    'id' => 9,
+    'id' => 3,
     'name' => 'xin chào mọi người',
+    'status' => 0,
     'tittle' => 'topic tittle nè hehe hehe',
     'keywords' => 'topic 1, topic_1',
     'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
     'username' => 'hippo_push',
-    'signature' => '7dd8e6dbb9e834f3acc62b2c8357ae8d'
+    'signature' => '3432a2da78d5e5530b7ff890b5f14233'
 ];
 
 $listData = [
     'page_number' => 1,
-    'number_record_of_pages' => 4,
+    'max_results' => 4,
     'username' => 'hippo_push',
-    'signature' => 'c525b0327d09be071ecb8733b0553b07'
+    'signature' => '073f5afed56bb19a656e34d5020cc63f'
 ];
 
 $showData = [
-    'id' => 9,
+    'id' => 2,
     'username' => 'hippo_push',
-    'signature' => '5599b81fd17b25d0cc75d65b73c646a5'
+    'signature' => '2e32b21c33c23e7ffb4ea5c6182449f8'
 ];
 
 //api  create or update
-//$api = new WebServiceTopic($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+$api = new WebServiceTopic($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
-//api list
+////api list
 //$api = new WebServiceTopic($config['OPTIONS']);
 //$api->setSdkConfig($config);
 //$api->setInputData($listData)
 //    ->list();
 
-//api show
-$api = new WebServiceTopic($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($showData)
-    ->show();
+////api show
+//$api = new WebServiceTopic($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($showData)
+//    ->show();
+
 echo "<pre>";
 print_r($api->getResponse());
 echo "</pre>";

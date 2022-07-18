@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 use nguyenanhung\Classes\Helper\UUID;
 
 /**
@@ -15,6 +14,8 @@ use nguyenanhung\Classes\Helper\UUID;
  */
 class WebServiceCategory extends BaseHttp
 {
+    public const API_NAME = 'category';
+
     public const STATUS_LEVEL = array(0, 1);
 
     public const PAGINATE = array(
@@ -22,9 +23,8 @@ class WebServiceCategory extends BaseHttp
         'number_of_records' => 10,
     );
 
+    public const DEFAULT_ORDER_STATUS = 0;
     public const DEFAULT_LANGUAGE = 'vietnamese';
-
-    protected $slug;
 
     /**
      * WebServiceOption constructor.
@@ -38,100 +38,30 @@ class WebServiceCategory extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
-    function formatStatusAndLevel($inputData = array(), $field): int
+    public function formatParentID($inputData = array()): int
     {
-        if (isset($inputData[$field]) && in_array($inputData[$field], self::STATUS_LEVEL, true)) {
-            return $inputData[$field];
-        }
-
-        return 1;
-    }
-
-    function formatLanguage($inputData = array())
-    {
-        if (isset($inputData['language']) && $inputData['language'] != null) {
-            return $inputData['language'];
-        }
-
-        return self::DEFAULT_LANGUAGE;
-    }
-
-    function formatParentID($inputData = array()): int
-    {
-        if (isset($inputData['parent']) && $inputData['parent'] != null && is_int($inputData['parent'])) {
+        if (isset($inputData['parent']) && is_int($inputData['parent'])) {
             $checkExits = $this->db->checkCategoryExists(
                 [
                     'id' => $inputData['parent']
                 ]
             );
-            if ($checkExits = 1) {
+            if ((int)$checkExits === 1) {
                 return $inputData['parent'];
             }
         }
         return 0;
     }
 
-    function formatPageNumber($inputData = array())
+    public function formatOrderStatus($inputData = array())
     {
-        if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
-            return $inputData['page_number'];
-        }
-
-        return self::PAGINATE['page_number'];
-    }
-
-    function formatSlug($inputData = array()): string
-    {
-        if (isset($inputData['slugs']) && $inputData['slugs'] != null) {
-            $slug = $this->inputData['slugs'];
-        } else {
-            $slug = $this->inputData['name'];
-        }
-        return $this->slug->convertVietnameseToEnglish($slug);
-    }
-
-    /**
-     * @param array $inputData
-     * @param $field
-     * @return mixed
-     */
-    function formatDescriptionAndKeywords(array $inputData = array(), $field)
-    {
-        if (isset($inputData[$field]) && $inputData[$field] != null) {
-            return $this->inputData[$field];
-        }
-
-        return $this->inputData['title'];
-    }
-
-    function formatShow(array $inputData = array(), $field)
-    {
-        if (isset($inputData[$field]) && $inputData[$field] != null && in_array($inputData[$field], self::STATUS_LEVEL)) {
-            return $this->inputData[$field];
-        }
-
-        return 0;
-    }
-
-    function formatOrderStatus($inputData = array())
-    {
-        if (isset($inputData['order_status']) && $inputData['order_status'] != null && is_int($inputData['order_status'])) {
+        if (isset($inputData['order_status']) && is_int($inputData['order_status'])) {
             return $this->inputData['order_status'];
         }
 
-        return 0;
-    }
-
-    function formatNumberRecordOfPage($inputData = array())
-    {
-        if (isset($inputData['number_record_of_pages']) && $inputData['number_record_of_pages'] > 0) {
-            return $inputData['number_record_of_pages'];
-        }
-
-        return self::PAGINATE['number_record_of_pages'];
+        return self::DEFAULT_ORDER_STATUS;
     }
 
     public function createOrUpdate(): WebServiceCategory
@@ -142,18 +72,18 @@ class WebServiceCategory extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidSignature'],
                 'inputData' => $this->inputData
             );
         } else {
-            $status = $this->formatStatusAndLevel($this->inputData, 'status');
+            $status = $this->formatStatus($this->inputData);
             $name = $this->inputData['name'] ?? null;
-            $slugs = $this->formatSlug($this->inputData);
-            $language = $this->formatLanguage($this->inputData);
+            $slugs = $this->slug->slugify($this->formatInput('slugs', 'name'));
+            $language = $this->slug->slugify($this->inputData['language']) ?? self::DEFAULT_LANGUAGE;
             $title = $this->inputData['title'] ?? null;
-            $description = $this->formatDescriptionAndKeywords($this->inputData, 'description');
-            $keywords = $this->formatDescriptionAndKeywords($this->inputData, 'keywords');
-            $oderStatus = $this->formatOrderStatus($this->inputData);
+            $description = $this->slug->slugify($this->formatInput('description', 'title'));
+            $keywords = $this->slug->slugify($this->formatInput('keywords', 'title'));
+            $orderStatus = (isset($this->inputData['order_status']) && is_int($this->inputData['order_status'])) ? $this->formatOrderStatus($this->inputData) : 0;
             $parent = $this->formatParentID($this->inputData);
             $photo = $this->inputData['photo'] ?? null;
             $username = $this->formatInputUsername($this->inputData);
@@ -162,12 +92,12 @@ class WebServiceCategory extends BaseHttp
             $showHome = $this->formatShow($this->inputData, 'show_home');
             $showRight = $this->formatShow($this->inputData, 'show_right');
             $showBottom = $this->formatShow($this->inputData, 'show_bottom');
-            $level = $this->formatStatusAndLevel($this->inputData, 'level');
+            $level = $this->formatStatus($this->inputData);
 
             if (empty($name) || empty($title) || empty($keywords) || empty($description) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -178,7 +108,7 @@ class WebServiceCategory extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
@@ -192,19 +122,19 @@ class WebServiceCategory extends BaseHttp
                         'description' => $description,
                         'keywords' => $keywords,
                         'photo' => $photo,
-                        'parent'=>$parent,
-                        'order_stt'=>$oderStatus,
-                        'show_top'=>$showTop,
-                        'show_home'=>$showHome,
-                        'show_right'=>$showRight,
-                        'show_bottom'=>$showBottom,
-                        'level'=>$level,
+                        'parent' => $parent,
+                        'order_stt' => $orderStatus,
+                        'show_top' => $showTop,
+                        'show_home' => $showHome,
+                        'show_right' => $showRight,
+                        'show_bottom' => $showBottom,
+                        'level' => $level,
                     );
 
                     if (isset($this->inputData['id'])) {
-                        $id = $this->inputData['id'] ;
-                        
-                        $checkCategoryExits = $this->db->checkCategoryExists(['id'=>$id]);
+                        $id = $this->inputData['id'];
+
+                        $checkCategoryExits = $this->db->checkCategoryExists(['id' => $id]);
                         if ($checkCategoryExits) {
                             $data['id'] = $id;
                             $data['updated_at'] = date("Y/m/d H:i:s");
@@ -212,19 +142,20 @@ class WebServiceCategory extends BaseHttp
                             if ($result) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => 'Đã ghi nhận update category thành công',
+                                    'desc' => self::ACTION['update'].' '.self::API_NAME . ' - '. self::MESSAGES['success'] ,
                                     'update_id' => $id,
                                 );
                             } else {
                                 $response = array(
                                     'result' => self::EXIT_CODE['notFound'],
-                                    'desc' => 'Không có gì thay đổi',
+                                    'desc' => self::MESSAGES['notFound'],
+                                    'inputData' => $this->inputData,
                                 );
                             }
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Không tồn tại category',
+                                'desc' => self::MESSAGES['notFound'],
                                 'data' => $this->inputData,
                             );
                         }
@@ -237,13 +168,13 @@ class WebServiceCategory extends BaseHttp
                         if ($id > 0) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Đã ghi nhận category thành công',
+                                'desc' =>  self::ACTION['create'].' '.self::API_NAME . ' - '. self::MESSAGES['success'],
                                 'insert_id' => $id,
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Ghi nhận category thất bại',
+                                'desc' => self::ACTION['create'].' '.self::API_NAME . ' - '. self::MESSAGES['failed'],
                                 'inputData' => $this->inputData,
                             );
                         }
@@ -251,7 +182,7 @@ class WebServiceCategory extends BaseHttp
                 }
             }
         }
-        $this->logger->info('WebConfig.createOrUpdate',
+        $this->logger->info('WebCategory.createOrUpdate',
             'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
@@ -262,14 +193,14 @@ class WebServiceCategory extends BaseHttp
     public function list(): WebServiceCategory
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
-        $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+        $numberRecordOfPage = $this->formatMaxResult($this->inputData);
         $username = $this->formatInputUsername($this->inputData);
         $signature = $this->formatInputSignature($this->inputData);
 
         if (empty($signature) || empty($username)) {
             $response = array(
                 'result' => self::EXIT_CODE['paramsIsEmpty'],
-                'desc' => 'Sai hoac thieu tham so.',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -279,7 +210,7 @@ class WebServiceCategory extends BaseHttp
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
                     'result' => self::EXIT_CODE['invalidSignature'],
-                    'desc' => 'Sai chu ky xac thuc.',
+                    'desc' => self::MESSAGES['invalidSignature'],
                     'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                 );
             } else {
@@ -291,13 +222,13 @@ class WebServiceCategory extends BaseHttp
 
                 $response = array(
                     'result' => self::EXIT_CODE['success'],
-                    'desc' => 'Danh sách category',
+                    'desc' => self::ACTION['getAll'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                     'data' => $listConfig,
                 );
             }
-
         }
-
+        $this->logger->info('WebCategory.list',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
         return $this;
@@ -310,7 +241,7 @@ class WebServiceCategory extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -320,7 +251,7 @@ class WebServiceCategory extends BaseHttp
             if (empty($id) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -331,28 +262,30 @@ class WebServiceCategory extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
                     $result = $this->db->showCategory(array('id' => $id));
 
-                    if ($result->count() === 1) {
+                    if ($result) {
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Đã nhận category thành công',
-                            'data' => json_encode($result[0]),
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                            'data' => json_encode($result),
                         );
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notFound'],
-                            'desc' => 'Không tồn tại category',
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notFound'],
+                            'input_data' => $this->inputData,
                         );
                     }
                 }
             }
         }
-
+        $this->logger->info('WebCategory.show',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
         return $this;

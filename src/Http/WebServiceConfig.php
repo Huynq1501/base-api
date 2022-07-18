@@ -14,6 +14,8 @@ use nguyenanhung\Libraries\Slug\SlugUrl;
  */
 class WebServiceConfig extends BaseHttp
 {
+    protected const API_NAME = 'config';
+
     public const TYPE = array(
         'string' => 0,
         'number' => 1,
@@ -47,7 +49,6 @@ class WebServiceConfig extends BaseHttp
         $this->slug = new SlugUrl();
     }
 
-
     protected function formatType($inputData = array()): int
     {
         if (in_array($inputData['type'], self::TYPE, true)) {
@@ -55,33 +56,6 @@ class WebServiceConfig extends BaseHttp
         }
 
         return 0;
-    }
-
-    protected function formatStatus($inputData = array()): int
-    {
-        if (in_array($inputData['status'], self::STATUS, true)) {
-            return $inputData['status'];
-        }
-
-        return 1;
-    }
-
-    public function formatPageNumber($inputData = array())
-    {
-        if (isset($inputData['page_number']) && $inputData['page_number'] > 1) {
-            return $inputData['page_number'];
-        }
-
-        return self::PAGINATE['page_number'];
-    }
-
-    public function formatNumberRecordOfPage($inputData = array())
-    {
-        if (isset($inputData['number_record_of_pages']) && $inputData['number_record_of_pages'] > 0) {
-            return $inputData['number_record_of_pages'];
-        }
-
-        return self::PAGINATE['number_record_of_pages'];
     }
 
     public function createOrUpdate(): WebServiceConfig
@@ -92,7 +66,7 @@ class WebServiceConfig extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -104,10 +78,10 @@ class WebServiceConfig extends BaseHttp
             $status = $this->formatStatus($this->inputData);
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
-            if (empty($id) || empty($language) || empty($value) || empty($signature) || empty($username)) {
+            if (empty($id) || $status === null || empty($language) || empty($value) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -118,7 +92,7 @@ class WebServiceConfig extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
@@ -142,20 +116,21 @@ class WebServiceConfig extends BaseHttp
                         if ($result) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Đã ghi nhận update config thành công',
+                                'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                 'update_id' => $data['id'],
                             );
                         } else {
                             $response = array(
-                                'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Không có gì thay đổi',
+                                'result' => self::EXIT_CODE['notChange'],
+                                'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notChange'],
+                                'input_Data' => $this->inputData,
                             );
                         }
                     } else {
                         $this->db->createConfig($data);
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Đã ghi nhận config thành công',
+                            'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                             'insert_id' => $data['id'],
                         );
                     }
@@ -177,20 +152,20 @@ class WebServiceConfig extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
             $category = $this->inputData['category'] ?? null;
             $pageNumber = $this->formatPageNumber($this->inputData);
-            $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+            $numberRecordOfPage = $this->formatMaxResult($this->inputData);
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
 
             if (empty($category) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -200,7 +175,7 @@ class WebServiceConfig extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
@@ -213,7 +188,7 @@ class WebServiceConfig extends BaseHttp
 
                     $response = array(
                         'result' => self::EXIT_CODE['success'],
-                        'desc' => 'Danh sách config',
+                        'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                         'data' => $listConfig,
                     );
                 }
@@ -222,6 +197,8 @@ class WebServiceConfig extends BaseHttp
         }
 
         $this->response = $response;
+        $this->logger->info('WebConfig.list',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
 
         return $this;
     }
@@ -234,7 +211,7 @@ class WebServiceConfig extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -245,7 +222,7 @@ class WebServiceConfig extends BaseHttp
             if (empty($id) || empty($language) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -256,11 +233,10 @@ class WebServiceConfig extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
-                    // Đoạn id này em đang phân vân không biết có nên format không.
                     $id = $this->slug->slugify($this->inputData['id'], '_');
 
                     $data = array(
@@ -269,16 +245,16 @@ class WebServiceConfig extends BaseHttp
                     );
                     $result = $this->db->showConfig($data);
 
-                    if ($result->count() === 1) {
+                    if ($result) {
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Thành công',
-                            'data' => json_encode($result[0]),
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                            'data' => json_encode($result),
                         );
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notFound'],
-                            'desc' => 'Không tồn tại config',
+                            'desc' => self::MESSAGES['success'],
                             'inputData' => $this->inputData
                         );
                     }
@@ -287,6 +263,8 @@ class WebServiceConfig extends BaseHttp
         }
 
         $this->response = $response;
+        $this->logger->info('WebConfig.show',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
 
         return $this;
     }
