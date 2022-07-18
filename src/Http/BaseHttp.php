@@ -14,20 +14,45 @@ use nguyenanhung\Backend\BaseAPI\Database\Database;
  */
 class BaseHttp extends BaseCore
 {
-    const EXIT_CODE = [
-        'success'           => 0,
-        'contentIsEmpty'    => 1,
-        'invalidParams'     => 2,
-        'invalidSignature'  => 3,
+    public const EXIT_CODE = [
+        'success' => 0,
+        'contentIsEmpty' => 1,
+        'invalidParams' => 2,
+        'invalidSignature' => 3,
         'outdatedSignature' => 4,
-        'invalidService'    => 5,
-        'paramsIsEmpty'     => 6,
+        'invalidService' => 5,
+        'paramsIsEmpty' => 6,
         'duplicatePrimaryKey' => 7,
         'notFound' => 8
 
     ];
 
-    /** @var \nguyenanhung\Backend\BaseAPI\Database\Database */
+    public const PAGINATE = array(
+        'page_number' => 1,
+        'max_results' => 10,
+    );
+
+    public const MESSAGES = array(
+        'invalidSignature' => 'Sai chu ky xac thuc',
+        'success' => 'Ghi nhan thanh cong',
+        'failed' => 'Ghi nhan that bai',
+        'invalidParams' => 'Sai hoac thieu tham so',
+        'duplicate' => 'Duplicate value'
+    );
+
+    public const ACTION = array(
+        'create' => 'create',
+        'getAll' => 'list',
+        'update' => 'update',
+        'read' => 'show'
+    );
+
+    public const STATUS = array(
+        'deactivate' => 0,
+        'active' => 1,
+    );
+
+    /** @var Database */
     protected $db;
 
     /**
@@ -106,4 +131,32 @@ class BaseHttp extends BaseCore
 
         return $res;
     }
+
+    protected function formatPageNumber($inputData = array())
+    {
+        if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
+            return $inputData['page_number'];
+        }
+
+        return self::PAGINATE['page_number'];
+    }
+
+    protected function formatMaxResult($inputData = array())
+    {
+        if (isset($inputData['max_results']) && $inputData['max_results'] > 0) {
+            return $inputData['max_results'];
+        }
+
+        return self::PAGINATE['max_results'];
+    }
+
+    protected function formatStatus($inputData = array()): ?int
+    {
+        if (in_array($inputData['status'], self::STATUS, true)) {
+            return $inputData['status'];
+        }
+
+        return null;
+    }
+
 }

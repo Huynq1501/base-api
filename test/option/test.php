@@ -11,15 +11,15 @@
 use nguyenanhung\Backend\BaseAPI\Http\WebServiceOption;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-$config = require __DIR__.'/../config.php';
+$config = require __DIR__ . '/../config.php';
 
 $inputData = [
-    'id' => 9,
-    'name' => 'option8',
-    'value' => 'test option 2',
+//    'id' => 11,
+    'name' => 'option 13',
+    'value' => 'test option 99999',
     'status' => 1,
     'username' => 'hippo_push',
-    'signature' => '9f62790541d6f58c86f4f3e5d0dd56f4'
+    'signature' => '6998ed269f5f963cb422e12f5a651cf5'
 ];
 
 $showData = [
@@ -30,28 +30,28 @@ $showData = [
 //
 $listData = [
     'page_number' => 3,
-    'number_record_of_pages' => 3,
+    'max_results' => 3,
     'username' => 'hippo_push',
     'signature' => '073f5afed56bb19a656e34d5020cc63f'
 ];
-//api list
-$api = new WebServiceOption($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($listData)
-    ->list();
+////api list
+//$api = new WebServiceOption($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($listData)
+//    ->list();
+//
+////api show
+//$api = new WebServiceOption($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($showData)
+//    ->show();
 
-//api show
-$api = new WebServiceOption($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($showData)
-    ->show();
 
 //api  create or update
 $api = new WebServiceOption($config['OPTIONS']);
 $api->setSdkConfig($config);
 $api->setInputData($inputData)
     ->createOrUpdate();
-
 
 echo "<pre>";
 print_r($api->getResponse());
