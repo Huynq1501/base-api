@@ -29,6 +29,9 @@ class WebServiceTag extends BaseHttp
         'normal' => 0,
         'hot' => 1,
     );
+
+    protected const API_NAME = 'tag';
+
     public const DEFAULT_LANGUAGE = 'vietnamese';
 
     protected $slug;
@@ -48,15 +51,6 @@ class WebServiceTag extends BaseHttp
         $this->slug = new SlugUrl();
     }
 
-    protected function formatStatus($inputData = array()): int
-    {
-        if (isset($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
-            return $inputData['status'];
-        }
-
-        return 1;
-    }
-
     protected function formatIsHot($inputData = array()): int
     {
         if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT, true)) {
@@ -64,33 +58,6 @@ class WebServiceTag extends BaseHttp
         }
 
         return 0;
-    }
-
-    protected function formatLanguage($inputData = array())
-    {
-        if (isset($inputData['language']) && $inputData['language'] != null) {
-            return $inputData['language'];
-        }
-
-        return self::DEFAULT_LANGUAGE;
-    }
-
-    protected function formatByField($inputData = array(), $field)
-    {
-        if (isset($inputData[$field]) && $inputData[$field] != null) {
-            return $this->inputData[$field];
-        }
-
-        return $this->inputData['name'];
-    }
-
-    protected function formatPageNumber($inputData = array())
-    {
-        if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
-            return $inputData['page_number'];
-        }
-
-        return self::PAGINATE['page_number'];
     }
 
     protected function formatSlug($inputData = array()): string
@@ -101,33 +68,6 @@ class WebServiceTag extends BaseHttp
             $slug = $this->inputData['name'];
         }
         return $this->slug->convertVietnameseToEnglish($slug);
-    }
-
-    protected function formatDescription($inputData = array())
-    {
-        if (isset($inputData['description']) && $inputData['description'] != null) {
-            return $this->inputData['description'];
-        }
-
-        return $this->inputData['tittle'];
-    }
-
-    protected function formatContent($inputData = array())
-    {
-        if (isset($inputData['content']) && $inputData['content'] != null) {
-            return $this->inputData['content'];
-        }
-
-        return $this->inputData['tittle'];
-    }
-
-    protected function formatNumberRecordOfPage($inputData = array())
-    {
-        if (isset($inputData['number_record_of_pages']) && $inputData['number_record_of_pages'] > 0) {
-            return $inputData['number_record_of_pages'];
-        }
-
-        return self::PAGINATE['number_record_of_pages'];
     }
 
     protected function formatPhoto($inputData = array())
@@ -145,13 +85,13 @@ class WebServiceTag extends BaseHttp
 
     public function createOrUpdate(): WebServiceTag
     {
-        $required = ['name', 'photo'];
+        $required = ['name', 'photo', 'status'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
 
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -159,18 +99,18 @@ class WebServiceTag extends BaseHttp
             $isHot = $this->formatIsHot($this->inputData);
             $name = $this->inputData['name'] ?? null;
             $slugs = $this->formatSlug($this->inputData);
-            $language = $this->formatLanguage($this->inputData);
-            $keywords = $this->formatByField($this->inputData, 'keywords');
-            $title = $this->formatByField($this->inputData, 'title');
-            $description = $this->formatByField($this->inputData, 'description');
+            $language = $this->inputData['language'] ?? self::DEFAULT_LANGUAGE;
+            $keywords = $this->formatInput('keywords', 'name');
+            $title = $this->formatInput('title', 'name');
+            $description = $this->formatInput('description', 'name');
             $photo = $this->formatPhoto($this->inputData);
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
 
-            if (empty($name) || empty($slugs) || empty($language) || empty($title) || empty($keywords) || empty($photo) || empty($description) || empty($signature) || empty($username)) {
+            if (empty($name) || $status === null || empty($slugs) || empty($language) || empty($title) || empty($keywords) || empty($photo) || empty($description) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -181,7 +121,7 @@ class WebServiceTag extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
@@ -212,19 +152,20 @@ class WebServiceTag extends BaseHttp
                             if ($result) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => 'Đã ghi nhận update tag thành công',
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                     'update_id' => $id,
                                 );
                             } else {
                                 $response = array(
-                                    'result' => self::EXIT_CODE['notFound'],
-                                    'desc' => 'Không có gì thay đổi',
+                                    'result' => self::EXIT_CODE['notChange'],
+                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notChange'],
+                                    'input_Data' => $this->inputData,
                                 );
                             }
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Không tồn tại tag',
+                                'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notFound'],
                                 'data' => $this->inputData,
                             );
                         }
@@ -240,13 +181,13 @@ class WebServiceTag extends BaseHttp
                         if ($id > 0) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => 'Đã ghi nhận tag thành công',
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                                 'insert_id' => $id,
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => 'Ghi nhận tag thất bại',
+                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
                                 'inputData' => $this->inputData,
                             );
                         }
@@ -265,14 +206,14 @@ class WebServiceTag extends BaseHttp
     public function list(): WebServiceTag
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
-        $numberRecordOfPage = $this->formatNumberRecordOfPage($this->inputData);
+        $numberRecordOfPage = $this->formatMaxResult($this->inputData);
         $username = $this->formatInputUsername($this->inputData);
         $signature = $this->formatInputSignature($this->inputData);
 
         if (empty($signature) || empty($username)) {
             $response = array(
                 'result' => self::EXIT_CODE['paramsIsEmpty'],
-                'desc' => 'Sai hoac thieu tham so.',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -282,7 +223,7 @@ class WebServiceTag extends BaseHttp
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
                     'result' => self::EXIT_CODE['invalidSignature'],
-                    'desc' => 'Sai chu ky xac thuc.',
+                    'desc' => self::MESSAGES['invalidSignature'],
                     'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                 );
             } else {
@@ -294,7 +235,7 @@ class WebServiceTag extends BaseHttp
 
                 $response = array(
                     'result' => self::EXIT_CODE['success'],
-                    'desc' => 'Danh sách tag',
+                    'desc' => self::ACTION['getAll'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                     'data' => $listConfig,
                 );
             }
@@ -313,7 +254,7 @@ class WebServiceTag extends BaseHttp
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => 'sai hoặc thiếu tham số',
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
@@ -323,7 +264,7 @@ class WebServiceTag extends BaseHttp
             if (empty($id) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
-                    'desc' => 'Sai hoac thieu tham so.',
+                    'desc' => self::MESSAGES['invalidParams'],
                     'inputData' => $this->inputData
                 );
             } else {
@@ -334,22 +275,22 @@ class WebServiceTag extends BaseHttp
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
                         'result' => self::EXIT_CODE['invalidSignature'],
-                        'desc' => 'Sai chu ky xac thuc.',
+                        'desc' => self::MESSAGES['invalidSignature'],
                         'valid' => (isset($this->options['showSignature']) && $this->options['showSignature'] === true) ? $validSignature : null
                     );
                 } else {
                     $result = $this->db->showTag(array('id' => $id));
 
-                    if ($result->count() === 1) {
+                    if ($result) {
                         $response = array(
                             'result' => self::EXIT_CODE['success'],
-                            'desc' => 'Đã nhận tag thành công',
-                            'data' => json_encode($result[0]),
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                            'data' => json_encode($result),
                         );
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notFound'],
-                            'desc' => 'Không tồn tại tag',
+                            'desc' => self::ACTION['read'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['notFound'],
                         );
                     }
                 }

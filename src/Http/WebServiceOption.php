@@ -15,10 +15,6 @@ use nguyenanhung\Libraries\Slug\SlugUrl;
 class WebServiceOption extends BaseHttp
 {
     protected const API_NAME = 'option';
-    public const STATUS = array(
-        'deactivate' => 0,
-        'active' => 1,
-    );
 
     protected $slug;
 
@@ -35,15 +31,6 @@ class WebServiceOption extends BaseHttp
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
         $this->slug = new SlugUrl();
-    }
-
-    protected function formatStatus($inputData = array()): ?int
-    {
-        if (in_array($inputData['status'], self::STATUS, true)) {
-            return $inputData['status'];
-        }
-
-        return null;
     }
 
     public function createOrUpdate(): WebServiceOption

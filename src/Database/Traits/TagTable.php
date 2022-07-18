@@ -91,15 +91,16 @@ trait TagTable
     {
         $DB = $this->tagTable();
         //show result
-        $result = $DB->getResult(
-            [
-                'id' => [
-                    'field' => 'id',
-                    'operator' => '=',
-                    'value' => $data['id']
-                ]
-            ],
-            '*');
+        $result = $DB->getInfo([
+            'id' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['id']
+            ]
+        ],
+            'id',
+            'array',
+            ['id', 'name', 'is_hot', 'slugs','language', 'title', 'status', 'description', 'keywords', 'photo','created_at','updated_at']);
 
         $DB->disconnect();
 

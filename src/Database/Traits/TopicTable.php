@@ -91,15 +91,16 @@ trait TopicTable
     {
         $DB = $this->topicTable();
         //show result
-        $result = $DB->getResult(
-            [
-                'id' => [
-                    'field' => 'id',
-                    'operator' => '=',
-                    'value' => $data['id']
-                ]
-            ],
-            '*');
+        $result = $DB->getInfo([
+            'id' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['id']
+            ]
+        ],
+            'id',
+            'array',
+            ['id', 'name', 'is_hot', 'slugs', 'title', 'status', 'description', 'content', 'keywords', 'photo']);
 
         $DB->disconnect();
 

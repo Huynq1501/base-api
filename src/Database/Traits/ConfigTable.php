@@ -44,7 +44,7 @@ trait ConfigTable
         return $result !== 0;
     }
 
-    public function updateConfig(array $data = array()): int
+    public function  updateConfig(array $data = array()): int
     {
         // connect to config table
         $DB = $this->configTable();
@@ -98,20 +98,17 @@ trait ConfigTable
     {
         $DB = $this->configTable();
         //show result
-        $result = $DB->getResult(
+        $result = $DB->getInfo(
             [
                 'id' => [
                     'field' => 'id',
                     'operator' => '=',
                     'value' => $data['id']
-                ],
-                'language'=>[
-                    'field' => 'language',
-                    'operator' => '=',
-                    'value' => $data['language']
                 ]
             ],
-            '*');
+            'id',
+            'array',
+            ['id','language','value','label','type','status']);
 
         $DB->disconnect();
 

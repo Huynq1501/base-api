@@ -4,6 +4,7 @@ namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
 use nguyenanhung\Backend\BaseAPI\Database\Database;
+use nguyenanhung\Libraries\Slug\SlugUrl;
 
 /**
  * Class BaseHttp
@@ -23,8 +24,8 @@ class BaseHttp extends BaseCore
         'invalidService' => 5,
         'paramsIsEmpty' => 6,
         'duplicatePrimaryKey' => 7,
-        'notFound' => 8
-
+        'notFound' => 8,
+        'notChange' => 9
     ];
 
     public const PAGINATE = array(
@@ -32,12 +33,17 @@ class BaseHttp extends BaseCore
         'max_results' => 10,
     );
 
+    public const STATUS_LEVEL = [0, 1];
+
+
     public const MESSAGES = array(
         'invalidSignature' => 'Sai chu ky xac thuc',
         'success' => 'Ghi nhan thanh cong',
         'failed' => 'Ghi nhan that bai',
         'invalidParams' => 'Sai hoac thieu tham so',
-        'duplicate' => 'Duplicate value'
+        'duplicate' => 'Duplicate value',
+        'notFound' => 'Khong ton tai ban ghi tuong ung',
+        'notChange' => 'Update that bai, data khong thay doi'
     );
 
     public const ACTION = array(
@@ -52,8 +58,13 @@ class BaseHttp extends BaseCore
         'active' => 1,
     );
 
+    public const SHOW_STATUS = array(
+        'deactivate' => 0,
+        'active' => 1,
+    );
+
     /** @var Database */
-    protected $db;
+    protected $db, $slug;
 
     /**
      * BaseHttp constructor.
@@ -68,6 +79,8 @@ class BaseHttp extends BaseCore
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
         $this->db = new Database($options);
+        $this->slug = new SlugUrl();
+
     }
 
     protected function formatInputStartDate($inputData = array())
@@ -157,6 +170,29 @@ class BaseHttp extends BaseCore
         }
 
         return null;
+    }
+
+    public function formatShow(array $inputData = array(), $field): int
+    {
+        if (isset($inputData[$field]) && in_array($inputData[$field], self::SHOW_STATUS,
+                true)) {
+            return $inputData[$field];
+        }
+
+        return self::SHOW_STATUS['deactivate'];
+    }
+
+    public function formatInput($first, $second): string
+    {
+        if (isset($this->inputData[$first])) {
+            $res = $this->inputData[$first];
+        } elseif (isset($this->inputData[$second])) {
+            $res = $this->inputData[$second];
+        } else {
+            $res = '';
+        }
+
+        return ($res);
     }
 
 }

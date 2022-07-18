@@ -11,39 +11,41 @@
 use nguyenanhung\Backend\BaseAPI\Http\WebServiceTag;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-$config = require __DIR__.'/../config.php';
+$config = require __DIR__ . '/../config.php';
 
 $inputData = [
+    'id' => 222,
     'name' => 'xin chào mọi người',
     'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
+    'status' => 0,
     'username' => 'hippo_push',
-    'signature' => 'faa082859f092c4bbb3d91899597d51e'
+    'signature' => '72c90dab46842c9dd4922497cacbe250'
 ];
 
 $listData = [
     'page_number' => 2,
-    'number_record_of_pages' => 4,
+    'max_results' => 4,
     'username' => 'hippo_push',
-    'signature' => 'c525b0327d09be071ecb8733b0553b07'
+    'signature' => '073f5afed56bb19a656e34d5020cc63f'
 ];
 
 $showData = [
-    'id' => 23,
+    'id' => 233,
     'username' => 'hippo_push',
-    'signature' => 'ec5bcf92ff257297746cb2ea9a15b971'
+    'signature' => 'a129614c97321f249ef781456abd93e4'
 ];
 
-//api  create or update
-$api = new WebServiceTag($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($inputData)
-    ->createOrUpdate();
+////api  create or update
+//$api = new WebServiceTag($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($inputData)
+//    ->createOrUpdate();
 
-//api list
-$api = new WebServiceTag($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($listData)
-    ->list();
+////api list
+//$api = new WebServiceTag($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($listData)
+//    ->list();
 
 //api show
 $api = new WebServiceTag($config['OPTIONS']);
