@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 
 /**
  * Class WebServiceAccount
@@ -32,7 +31,7 @@ class WebServiceOption extends BaseHttp
 
     public function createOrUpdate(): WebServiceOption
     {
-        $required = ['name', 'value','status'];
+        $required = ['name', 'value', 'status'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
 
         if ($filter === false) {
@@ -48,7 +47,7 @@ class WebServiceOption extends BaseHttp
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
 
-            if (empty($name) || empty($status) || empty($value) || empty($signature) || empty($username)) {
+            if (empty($name) || $status === null || empty($value) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => self::MESSAGES['invalidParams'],

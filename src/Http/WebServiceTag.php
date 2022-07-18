@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 use nguyenanhung\Classes\Helper\UUID;
 
 /**
@@ -59,7 +58,7 @@ class WebServiceTag extends BaseHttp
 
     protected function formatPhoto($inputData = array())
     {
-        if (isset($inputData['photo']) && $inputData['photo'] != null) {
+        if (isset($inputData['photo'])) {
             return json_encode(
                 [
                     'photo' => $inputData['photo']

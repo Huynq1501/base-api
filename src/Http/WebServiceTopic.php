@@ -3,7 +3,6 @@
 namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Classes\Helper\Filter;
-use nguyenanhung\Libraries\Slug\SlugUrl;
 use nguyenanhung\Classes\Helper\UUID;
 
 /**
