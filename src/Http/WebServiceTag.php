@@ -34,8 +34,6 @@ class WebServiceTag extends BaseHttp
 
     public const DEFAULT_LANGUAGE = 'vietnamese';
 
-    protected $slug;
-
     /**
      * WebServiceOption constructor.
      *
@@ -48,7 +46,6 @@ class WebServiceTag extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
     protected function formatIsHot($inputData = array()): int
@@ -58,16 +55,6 @@ class WebServiceTag extends BaseHttp
         }
 
         return 0;
-    }
-
-    protected function formatSlug($inputData = array()): string
-    {
-        if (isset($inputData['slugs']) && $inputData['slugs'] != null) {
-            $slug = $this->inputData['slugs'];
-        } else {
-            $slug = $this->inputData['name'];
-        }
-        return $this->slug->convertVietnameseToEnglish($slug);
     }
 
     protected function formatPhoto($inputData = array())
@@ -98,7 +85,7 @@ class WebServiceTag extends BaseHttp
             $status = $this->formatStatus($this->inputData);
             $isHot = $this->formatIsHot($this->inputData);
             $name = $this->inputData['name'] ?? null;
-            $slugs = $this->formatSlug($this->inputData);
+            $slugs = $this->slug->slugify($this->formatInput('slugs','name'));
             $language = $this->inputData['language'] ?? self::DEFAULT_LANGUAGE;
             $keywords = $this->formatInput('keywords', 'name');
             $title = $this->formatInput('title', 'name');

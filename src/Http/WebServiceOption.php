@@ -16,8 +16,6 @@ class WebServiceOption extends BaseHttp
 {
     protected const API_NAME = 'option';
 
-    protected $slug;
-
     /**
      * WebServiceOption constructor.
      *
@@ -30,7 +28,6 @@ class WebServiceOption extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
     public function createOrUpdate(): WebServiceOption

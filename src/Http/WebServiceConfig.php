@@ -32,8 +32,6 @@ class WebServiceConfig extends BaseHttp
         'number_of_records' => 10,
     );
 
-    protected $slug;
-
     /**
      * WebServiceConfig constructor.
      *
@@ -46,7 +44,6 @@ class WebServiceConfig extends BaseHttp
     {
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
-        $this->slug = new SlugUrl();
     }
 
     protected function formatType($inputData = array()): int
