@@ -91,7 +91,7 @@ trait OptionTable
     {
         $DB = $this->optionTable();
         //show result
-        $result = $DB->getResult(
+        $result = $DB->getInfo(
             [
                 'id' => [
                     'field' => 'id',
@@ -99,7 +99,7 @@ trait OptionTable
                     'value' => $data['id']
                 ]
             ],
-            '*');
+            'id','array',['id','name','value','status']);
 
         $DB->disconnect();
 
