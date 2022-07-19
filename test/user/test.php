@@ -15,15 +15,15 @@ $config = require __DIR__ . '/../config.php';
 
 $inputData = [
 //    'id' => 9,
-    'department_id' => 10,
-    'parent' => 4,
+//    'department_id' => 10,
+//    'parent' => 4,
     'status' => 1,
-    'user_name' => 'huy3',
+    'user_name' => 'huy4',
     'fullname' => 'Nham Quang Huy',
     'address' => 'addresss',
-    'email' => 'huy999@beetsoft.com.vn',
+    'email' => 'huy123@beetsoft.com.vn',
 //    'avatar' => '3432a2da78d5e5530b7ff890b5f14233',
-    'group_id' => 4,
+//    'group_id' => 4,
     'password' => 'Hippo99',
 //    'reset_password'=>,
     'phone' => '0961618660',
@@ -34,7 +34,7 @@ $inputData = [
     'google_token' => '',
     'google_refresh_token' => '',
     'username' => 'hippo_push',
-    'signature' => '94c8b39f651fa317d52a4a2e1630928f'
+    'signature' => '47ae858e0f780c059271420c1cbff0cb'
 ];
 
 
