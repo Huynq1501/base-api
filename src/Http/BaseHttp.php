@@ -4,6 +4,7 @@ namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
 use nguyenanhung\Backend\BaseAPI\Database\Database;
+use nguyenanhung\Libraries\Password\Hash;
 use nguyenanhung\Libraries\Slug\SlugUrl;
 
 /**
@@ -25,7 +26,8 @@ class BaseHttp extends BaseCore
         'paramsIsEmpty' => 6,
         'duplicatePrimaryKey' => 7,
         'notFound' => 8,
-        'notChange' => 9
+        'notChange' => 9,
+        'notUnique' => 10,
     ];
 
     public const PAGINATE = array(
@@ -43,19 +45,22 @@ class BaseHttp extends BaseCore
         'invalidParams' => 'Sai hoac thieu tham so',
         'duplicate' => 'Duplicate value',
         'notFound' => 'Khong ton tai ban ghi tuong ung',
-        'notChange' => 'Update that bai, data khong thay doi'
+        'notChange' => 'Update that bai, data khong thay doi',
+        'notUnique' => 'Da ton tai, hay thu lai'
     );
 
     public const ACTION = array(
         'create' => 'create',
         'getAll' => 'list',
         'update' => 'update',
-        'read' => 'show'
+        'read' => 'show',
+        'delete' => 'delete',
     );
 
     public const STATUS = array(
         'deactivate' => 0,
         'active' => 1,
+        'wait_active' => 2,
     );
 
     public const SHOW_STATUS = array(
@@ -164,7 +169,7 @@ class BaseHttp extends BaseCore
 
     protected function formatStatus($inputData = array()): ?int
     {
-        if (in_array($inputData['status'], self::STATUS, true)) {
+        if (!empty($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
             return $inputData['status'];
         }
 
@@ -192,6 +197,12 @@ class BaseHttp extends BaseCore
         }
 
         return ($res);
+    }
+
+    // format input default value null
+    public function formatInputNull($field)
+    {
+        return empty($this->inputData[$field]) ? null : $this->inputData[$field];
     }
 
 }
