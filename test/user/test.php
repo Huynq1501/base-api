@@ -17,13 +17,14 @@ $inputData = [
 //    'id' => 9,
     'department_id' => 10,
     'parent' => 4,
-    'status' =>1,
+    'status' => 1,
+    'user_name' => 'huy3',
     'fullname' => 'Nham Quang Huy',
     'address' => 'addresss',
-    'email' => 'huy2@beetsoft.com.vn',
+    'email' => 'huy999@beetsoft.com.vn',
 //    'avatar' => '3432a2da78d5e5530b7ff890b5f14233',
     'group_id' => 4,
-    'password' => 'a',
+    'password' => 'Hippo99',
 //    'reset_password'=>,
     'phone' => '0961618660',
 //    'note' => 'note',
@@ -33,7 +34,7 @@ $inputData = [
     'google_token' => '',
     'google_refresh_token' => '',
     'username' => 'hippo_push',
-    'signature' => 'f661c89c68331c6d85d6a64cfbbd14d9'
+    'signature' => '94c8b39f651fa317d52a4a2e1630928f'
 ];
 
 
