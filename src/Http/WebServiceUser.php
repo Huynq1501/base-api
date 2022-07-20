@@ -34,6 +34,12 @@ class WebServiceUser extends BaseHttp
     protected const API_NAME = 'user';
     protected const DEFAULT_ID = 0;
 
+    protected const MES_LOGIN = array(
+        'notFound' => 'Account does not exist, please try again',
+        'inCorrect' => 'Account or password is incorrect, please try again',
+        'success' => 'Logged in successfully',
+    );
+
     /**
      * @throws Exception
      */
@@ -377,6 +383,63 @@ class WebServiceUser extends BaseHttp
         $this->response = $response;
         $this->logger->info('WebUser.delete',
             'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function login(): WebServiceUser
+    {
+        $isValid = Validation::is_valid($this->inputData, [
+            'user' => 'required',
+            'password' => 'required',
+        ], [
+            'user' => ['required' => 'Fill the account field please.'],
+            'password' => ['required' => 'Fill the password field please.'],
+        ]);
+
+        if ($isValid !== true) {
+            $response = array(
+                'result' => self::EXIT_CODE['invalidParams'],
+                'desc' => json_encode($isValid),
+                'inputData' => $this->inputData
+            );
+        } else {
+            $result = $this->db->login(
+                [
+                    'account' => $this->inputData['user'],
+                    'password' => $this->inputData['password'],
+                ]
+            );
+            if (!$result) {
+                $response = array(
+                    'result' => self::EXIT_CODE['notFound'],
+                    'desc' => self::MES_LOGIN['notFound'],
+                    'inputData' => $this->inputData
+                );
+            } else {
+                $password = $this->inputData['password'] . $result->salt;
+                if (Hash::generateHashValue($password) === $result->password) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['success'],
+                        'desc' => self::MES_LOGIN['success'],
+                        'inputData' => $this->inputData
+                    );
+                } else {
+                    $response = array(
+                        'result' => self::EXIT_CODE['notFound'],
+                        'desc' => self::MES_LOGIN['inCorrect'],
+                        'inputData' => $this->inputData
+                    );
+                }
+            }
+        }
+
+        $this->logger->info('WebAuth.',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
+        $this->response = $response;
 
         return $this;
     }

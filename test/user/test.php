@@ -18,10 +18,10 @@ $inputData = [
 //    'department_id' => 10,
 //    'parent' => 4,
     'status' => 1,
-    'user_name' => 'huy4',
+    'user_name' => 'huynq1501',
     'fullname' => 'Nham Quang Huy',
     'address' => 'addresss',
-    'email' => 'huy123@beetsoft.com.vn',
+    'email' => 'huynq1501@beetsoft.com.vn',
 //    'avatar' => '3432a2da78d5e5530b7ff890b5f14233',
 //    'group_id' => 4,
     'password' => 'Hippo99',
@@ -34,9 +34,8 @@ $inputData = [
     'google_token' => '',
     'google_refresh_token' => '',
     'username' => 'hippo_push',
-    'signature' => '47ae858e0f780c059271420c1cbff0cb'
+    'signature' => '9827f37cedae3d8806aa4c773511fd59'
 ];
-
 
 $listData = [
     'page_number' => 1,
@@ -57,11 +56,16 @@ $deleteData = [
     'signature' => '71188241d981844544f9ea8fb189db64'
 ];
 
-//api  create or update
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($inputData)
-    ->createOrUpdate();
+$loginData = [
+    'user' => 'huynq1501@beetsoft.com.vn',
+    'password' => 'Hippo99',
+];
+
+////api  create or update
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($inputData)
+//    ->createOrUpdate();
 
 //api list
 //$api = new WebServiceUser($config['OPTIONS']);
@@ -80,6 +84,12 @@ $api->setInputData($inputData)
 //$api->setSdkConfig($config);
 //$api->setInputData($deleteData)
 //    ->delete();
+
+//api login
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($loginData)
+    ->login();
 
 echo "<pre>";
 print_r($api->getResponse());

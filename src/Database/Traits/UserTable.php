@@ -126,7 +126,7 @@ trait UserTable
         return $result;
     }
 
-    public function deleteUser(array $data = array())
+    public function deleteUser(array $data = array()): int
     {
         $DB = $this->UserTable();
         //delete
@@ -143,5 +143,34 @@ trait UserTable
 
         return $result;
     }
+
+    public function login(array $data = array())
+    {
+        $DB = $this->UserTable();
+        //check login by user or email
+        $userName = $DB->getInfo(
+            ['username' => ['field' => 'username', 'operator' => '=', 'value' => $data['account']]],
+            'username',
+            'array',
+            ['username', 'email', 'salt', 'password']
+        );
+        $email = $DB->getInfo(
+            ['email' => ['field' => 'email', 'operator' => '=', 'value' => $data['account']]],
+            'email',
+            'array',
+            ['username', 'email', 'salt', 'password']
+        );
+
+        if ($userName) {
+            return $userName;
+        }
+
+        if ($email) {
+            return $email;
+        }
+
+        return false;
+    }
+
 
 }
