@@ -50,7 +50,7 @@ class WebServiceCategory extends BaseHttp
         return 0;
     }
 
-    public function createOrUpdate(): int
+    public function createOrUpdate(): WebServiceCategory
     {
         $required = ['name', 'title', 'parent'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
@@ -89,7 +89,7 @@ class WebServiceCategory extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($name . '$' . $title . '$' . $keywords . '$' . $description . '$' . $parent . '$' . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($name . self::KEY . $title . self::KEY . $keywords . self::KEY . $description . self::KEY . $parent . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -191,7 +191,7 @@ class WebServiceCategory extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -243,7 +243,7 @@ class WebServiceCategory extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . '$' . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
