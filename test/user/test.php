@@ -61,6 +61,15 @@ $loginData = [
     'password' => 'Hippo99',
 ];
 
+$registerData = [
+//    'user_name' => 'huynq13',
+    'fullname' => 'Nham Quang Huy',
+    'email' => 'huynq14@beetsoft.com.vn',
+    'password' => 'Hippo99',
+    'confirm_password' => 'Hippo99',
+    'phone' => '0961618660',
+];
+
 ////api  create or update
 //$api = new WebServiceUser($config['OPTIONS']);
 //$api->setSdkConfig($config);
@@ -85,11 +94,17 @@ $loginData = [
 //$api->setInputData($deleteData)
 //    ->delete();
 
-//api login
+////api login
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($loginData)
+//    ->login();
+
+//register
 $api = new WebServiceUser($config['OPTIONS']);
 $api->setSdkConfig($config);
-$api->setInputData($loginData)
-    ->login();
+$api->setInputData($registerData)
+    ->register();
 
 echo "<pre>";
 print_r($api->getResponse());

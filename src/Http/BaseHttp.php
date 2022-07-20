@@ -55,6 +55,8 @@ class BaseHttp extends BaseCore
         'update' => 'update',
         'read' => 'show',
         'delete' => 'delete',
+        'login' => 'login',
+        'register' => 'register',
     );
 
     public const STATUS = array(
