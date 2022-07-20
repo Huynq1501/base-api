@@ -46,14 +46,14 @@ class WebServiceUser extends BaseHttp
 //        }, 'please login with beetsoft email');
 
         $isValid = Validation::is_valid($this->inputData, [
-            'email' => 'required|valid_email|email_beetsoft',
+            'email' => 'required|valid_email',
             'fullname' => 'required',
             'address' => 'required',
             'phone' => 'required|between_len,10;11|numeric',
         ], [
             'email' => [
                 'required' => 'Fill the email field please.',
-//                'valid_email' => 'Email is incorrect, please try again.'
+                'valid_email' => 'Email is incorrect, please try again.'
             ],
             'fullname' => ['required' => 'Fill the fullname field please.',],
             'address' => ['required' => 'Fill the address field please.'],
