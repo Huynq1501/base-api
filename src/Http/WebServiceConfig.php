@@ -73,7 +73,7 @@ class WebServiceConfig extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . '$' . $value . '$' . $language . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $value . self::KEY . $language . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -156,7 +156,7 @@ class WebServiceConfig extends BaseHttp
                 );
             } else {
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($category . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($category . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -214,7 +214,7 @@ class WebServiceConfig extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . '$' . $language . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $language . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(

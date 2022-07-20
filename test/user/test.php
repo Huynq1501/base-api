@@ -15,15 +15,15 @@ $config = require __DIR__ . '/../config.php';
 
 $inputData = [
 //    'id' => 9,
-    'department_id' => 10,
-    'parent' => 4,
+//    'department_id' => 10,
+//    'parent' => 4,
     'status' => 1,
-    'user_name' => 'huy3',
+    'user_name' => 'huynq1501',
     'fullname' => 'Nham Quang Huy',
     'address' => 'addresss',
-    'email' => 'huy999@beetsoft.com.vn',
+    'email' => 'huynq1501@beetsoft.com.vn',
 //    'avatar' => '3432a2da78d5e5530b7ff890b5f14233',
-    'group_id' => 4,
+//    'group_id' => 4,
     'password' => 'Hippo99',
 //    'reset_password'=>,
     'phone' => '0961618660',
@@ -34,9 +34,8 @@ $inputData = [
     'google_token' => '',
     'google_refresh_token' => '',
     'username' => 'hippo_push',
-    'signature' => '94c8b39f651fa317d52a4a2e1630928f'
+    'signature' => '9827f37cedae3d8806aa4c773511fd59'
 ];
-
 
 $listData = [
     'page_number' => 1,
@@ -57,11 +56,25 @@ $deleteData = [
     'signature' => '71188241d981844544f9ea8fb189db64'
 ];
 
-//api  create or update
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($inputData)
-    ->createOrUpdate();
+$loginData = [
+    'user' => 'huynq1501@beetsoft.com.vn',
+    'password' => 'Hippo99',
+];
+
+$registerData = [
+//    'user_name' => 'huynq13',
+    'fullname' => 'Nham Quang Huy',
+    'email' => 'huynq14@beetsoft.com.vn',
+    'password' => 'Hippo99',
+    'confirm_password' => 'Hippo99',
+    'phone' => '0961618660',
+];
+
+////api  create or update
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($inputData)
+//    ->createOrUpdate();
 
 //api list
 //$api = new WebServiceUser($config['OPTIONS']);
@@ -80,6 +93,18 @@ $api->setInputData($inputData)
 //$api->setSdkConfig($config);
 //$api->setInputData($deleteData)
 //    ->delete();
+
+////api login
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($loginData)
+//    ->login();
+
+//register
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($registerData)
+    ->register();
 
 echo "<pre>";
 print_r($api->getResponse());

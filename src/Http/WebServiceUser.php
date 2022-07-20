@@ -34,6 +34,12 @@ class WebServiceUser extends BaseHttp
     protected const API_NAME = 'user';
     protected const DEFAULT_ID = 0;
 
+    protected const MES_AUTH = array(
+        'notFound' => 'Account does not exist, please try again',
+        'inCorrect' => 'Account or password is incorrect, please try again',
+        'success' => ' successfully',
+    );
+
     /**
      * @throws Exception
      */
@@ -46,14 +52,14 @@ class WebServiceUser extends BaseHttp
 //        }, 'please login with beetsoft email');
 
         $isValid = Validation::is_valid($this->inputData, [
-            'email' => 'required|valid_email|email_beetsoft',
+            'email' => 'required|valid_email',
             'fullname' => 'required',
             'address' => 'required',
             'phone' => 'required|between_len,10;11|numeric',
         ], [
             'email' => [
                 'required' => 'Fill the email field please.',
-//                'valid_email' => 'Email is incorrect, please try again.'
+                'valid_email' => 'Email is incorrect, please try again.'
             ],
             'fullname' => ['required' => 'Fill the fullname field please.',],
             'address' => ['required' => 'Fill the address field please.'],
@@ -88,14 +94,14 @@ class WebServiceUser extends BaseHttp
             $thumb = $this->formatInputNull('thumb');
             $remember_token = $this->formatInputNull('remember_token');
             $status = $this->formatStatus($this->inputData);
-            $google_token = empty($this->inputData['token']) ? '' : $this->inputData['google_token'];
-            $google_refresh_token = empty($this->inputData['token']) ? '' : $this->inputData['google_token'];
+            $google_token = empty($this->inputData['google_token']) ? '' : $this->inputData['google_token'];
+            $google_refresh_token = empty($this->inputData['google_refresh_token']) ? '' : $this->inputData['google_refresh_token'];
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
 
             // get user role
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($userName . '$' . $fullName . '$' . $address . '$' . $email . '$' . $phone . '$' . $username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($userName . self::KEY . $fullName . self::KEY . $address . self::KEY . $email . self::KEY . $phone . self::KEY . $username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -234,7 +240,7 @@ class WebServiceUser extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -288,7 +294,7 @@ class WebServiceUser extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -346,7 +352,7 @@ class WebServiceUser extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -377,6 +383,161 @@ class WebServiceUser extends BaseHttp
         $this->response = $response;
         $this->logger->info('WebUser.delete',
             'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
+
+        return $this;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function login(): WebServiceUser
+    {
+        $isValid = Validation::is_valid($this->inputData, [
+            'user' => 'required',
+            'password' => 'required',
+        ], [
+            'user' => ['required' => 'Fill the account field please.'],
+            'password' => ['required' => 'Fill the password field please.'],
+        ]);
+
+        if ($isValid !== true) {
+            $response = array(
+                'result' => self::EXIT_CODE['invalidParams'],
+                'desc' => json_encode($isValid),
+                'inputData' => $this->inputData
+            );
+        } else {
+            $result = $this->db->login(
+                [
+                    'account' => $this->inputData['user'],
+                    'password' => $this->inputData['password'],
+                ]
+            );
+            if (!$result) {
+                $response = array(
+                    'result' => self::EXIT_CODE['notFound'],
+                    'desc' => self::MES_AUTH['notFound'],
+                    'inputData' => $this->inputData
+                );
+            } else {
+                $password = $this->inputData['password'] . $result->salt;
+                if (Hash::generateHashValue($password) === $result->password) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['success'],
+                        'desc' => self::ACTION['login'] . self::MES_AUTH['success'],
+                        'inputData' => $this->inputData
+                    );
+                } else {
+                    $response = array(
+                        'result' => self::EXIT_CODE['notFound'],
+                        'desc' => self::MES_AUTH['inCorrect'],
+                        'inputData' => $this->inputData
+                    );
+                }
+            }
+        }
+
+        $this->logger->info('WebAuth.login',
+            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
+        $this->response = $response;
+
+        return $this;
+    }
+
+    public function register(): WebServiceUser
+    {
+        $inputData = $this->inputData;
+        $isValid = Validation::is_valid($inputData, [
+            'fullname' => 'required',
+            'email' => 'required|valid_email',
+            'password' => 'required|between_len,6;32',
+            'confirm_password' => 'required',
+            'phone' => 'required|between_len,10;11|numeric',
+        ], [
+            'fullname' => ['required' => 'Fill the fullname field please.'],
+            'email' => [
+                'required' => 'Fill the email field please.',
+                'valid_email' => 'Email is incorrect, please try again.'
+            ],
+            'password' => [
+                'required' => 'Fill the password field please.',
+                'between_len' => 'Password must be between {param[0]} and {param[1]} characters.'
+            ],
+            'confirm_password' => [
+                'required' => 'Fill the confirm password field please.',
+            ],
+            'phone' => [
+                'required' => 'Fill the phone field please.',
+                'between_len' => '{field} must be between {param[0]} and {param[1]} characters.',
+                'numeric' => 'please enter a valid phone number'
+            ],
+        ]);
+
+        if ($isValid !== true) {
+            $response = array(
+                'result' => self::EXIT_CODE['invalidParams'],
+                'desc' => json_encode($isValid),
+                'inputData' => $inputData
+            );
+        } else {
+            $salt = Hash::generateUserSaltKey();
+            $userName = empty($inputData['user_name']) ? implode('@',
+                explode('@', $inputData['email'], -1)) : $inputData['user_name'];
+            $data = array(
+                'department_id' => empty($inputData['department_id']) ? self::DEFAULT_ID : $inputData['department_id'],
+                'parent' => empty($inputData['parent']) ? self::DEFAULT_ID : $inputData['parent'],
+                'username' => $userName,
+                'fullname' => $inputData['fullname'],
+                'address' => empty($inputData['address']) ? '' : $inputData,
+                'email' => $inputData['email'],
+                'status' => self::STATUS['wait_active'],
+                'avatar' => null,
+                'group_id' => self::DEFAULT_ID,
+                'password' => Hash::generateHashValue($inputData['password'] . $salt),
+                'reset_password' => 0,
+                'updated_pass' => Date('Y-m-d H:i:s'),
+                'phone' => $inputData['phone'],
+                'note' => null,
+                'photo' => null,
+                'thumb' => null,
+                'remember_token' => null,
+                'salt' => $salt,
+                'token' => Hash::generateUserToken(),
+                'activation_key' => Hash::generateOTPCode(),
+                'created_at' => Date('Y-m-d H:i:s'),
+                'updated_at' => Date('Y-m-d H:i:s'),
+                'google_token' => empty($inputData['google_token']) ? '' : $inputData['google_token'],
+                'google_refresh_token' => empty($inputData['google_refresh_token']) ? '' : $inputData['google_refresh_token'],
+            );
+
+            $uniEmail = $this->db->checkExitsRecords(['email' => $inputData['email']], 'beetsoft_user');
+            $uniUserName = $this->db->checkExitsRecords(['username' => $userName], 'beetsoft_user');
+            if ($uniEmail || $uniUserName) {
+                $response = array(
+                    'result' => self::EXIT_CODE['notUnique'],
+                    'desc' => 'Email or username ' . self::MESSAGES['notUnique'],
+                    'data' => $inputData,
+                );
+            } else {
+                $id = $this->db->createUser($data);
+                if ($id > 0) {
+                    $response = array(
+                        'result' => self::EXIT_CODE['success'],
+                        'desc' => self::ACTION['register'] . self::MES_AUTH['success'],
+                    );
+                } else {
+                    $response = array(
+                        'result' => self::EXIT_CODE['notFound'],
+                        'desc' => self::MESSAGES['failed'],
+                        'inputData' => $inputData,
+                    );
+                }
+            }
+        }
+
+        $this->logger->info('WebAuth.register',
+            'Input data: ' . json_encode($inputData) . ' -> Response: ' . json_encode($response));
+        $this->response = $response;
 
         return $this;
     }
