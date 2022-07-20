@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__ . '/../config.php';
 
 $inputData = [
-//    'id' => 9,
+//    'id' => 30,
 //    'department_id' => 10,
 //    'parent' => 4,
     'status' => 1,
@@ -62,9 +62,9 @@ $loginData = [
 ];
 
 $registerData = [
-//    'user_name' => 'huynq13',
+//    'user_name' => 'huynq150111',
     'fullname' => 'Nham Quang Huy',
-    'email' => 'huynq14@beetsoft.com.vn',
+    'email' => 'huynq15011111@beetsoft.com.vn',
     'password' => 'Hippo99',
     'confirm_password' => 'Hippo99',
     'phone' => '0961618660',
@@ -98,13 +98,13 @@ $registerData = [
 //$api = new WebServiceUser($config['OPTIONS']);
 //$api->setSdkConfig($config);
 //$api->setInputData($loginData)
-//    ->login();
-
+//    ->userLogin();
+//
 //register
 $api = new WebServiceUser($config['OPTIONS']);
 $api->setSdkConfig($config);
 $api->setInputData($registerData)
-    ->register();
+    ->userRegister();
 
 echo "<pre>";
 print_r($api->getResponse());
