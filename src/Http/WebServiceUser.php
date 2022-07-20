@@ -101,7 +101,7 @@ class WebServiceUser extends BaseHttp
 
             // get user role
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($userName . '$' . $fullName . '$' . $address . '$' . $email . '$' . $phone . '$' . $username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($userName . self::KEY . $fullName . self::KEY . $address . self::KEY . $email . self::KEY . $phone . self::KEY . $username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -240,7 +240,7 @@ class WebServiceUser extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -294,7 +294,7 @@ class WebServiceUser extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -352,7 +352,7 @@ class WebServiceUser extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(

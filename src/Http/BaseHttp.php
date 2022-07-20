@@ -4,7 +4,6 @@ namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
 use nguyenanhung\Backend\BaseAPI\Database\Database;
-use nguyenanhung\Libraries\Password\Hash;
 use nguyenanhung\Libraries\Slug\SlugUrl;
 
 /**
@@ -37,6 +36,7 @@ class BaseHttp extends BaseCore
 
     public const STATUS_LEVEL = [0, 1];
 
+    public const KEY = '$';
 
     public const MESSAGES = array(
         'invalidSignature' => 'Sai chu ky xac thuc',
