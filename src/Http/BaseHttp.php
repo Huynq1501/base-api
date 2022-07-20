@@ -4,6 +4,8 @@ namespace nguyenanhung\Backend\BaseAPI\Http;
 
 use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
 use nguyenanhung\Backend\BaseAPI\Database\Database;
+use nguyenanhung\Libraries\Password\Hash;
+use nguyenanhung\Libraries\Slug\SlugUrl;
 
 /**
  * Class BaseHttp
@@ -14,21 +16,60 @@ use nguyenanhung\Backend\BaseAPI\Database\Database;
  */
 class BaseHttp extends BaseCore
 {
-    const EXIT_CODE = [
-        'success'           => 0,
-        'contentIsEmpty'    => 1,
-        'invalidParams'     => 2,
-        'invalidSignature'  => 3,
+    public const EXIT_CODE = [
+        'success' => 0,
+        'contentIsEmpty' => 1,
+        'invalidParams' => 2,
+        'invalidSignature' => 3,
         'outdatedSignature' => 4,
-        'invalidService'    => 5,
-        'paramsIsEmpty'     => 6,
+        'invalidService' => 5,
+        'paramsIsEmpty' => 6,
         'duplicatePrimaryKey' => 7,
-        'notFound' => 8
-
+        'notFound' => 8,
+        'notChange' => 9,
+        'notUnique' => 10,
     ];
 
-    /** @var \nguyenanhung\Backend\BaseAPI\Database\Database */
-    protected $db;
+    public const PAGINATE = array(
+        'page_number' => 1,
+        'max_results' => 10,
+    );
+
+    public const STATUS_LEVEL = [0, 1];
+
+
+    public const MESSAGES = array(
+        'invalidSignature' => 'Sai chu ky xac thuc',
+        'success' => 'Ghi nhan thanh cong',
+        'failed' => 'Ghi nhan that bai',
+        'invalidParams' => 'Sai hoac thieu tham so',
+        'duplicate' => 'Duplicate value',
+        'notFound' => 'Khong ton tai ban ghi tuong ung',
+        'notChange' => 'Update that bai, data khong thay doi',
+        'notUnique' => 'Da ton tai, hay thu lai'
+    );
+
+    public const ACTION = array(
+        'create' => 'create',
+        'getAll' => 'list',
+        'update' => 'update',
+        'read' => 'show',
+        'delete' => 'delete',
+    );
+
+    public const STATUS = array(
+        'deactivate' => 0,
+        'active' => 1,
+        'wait_active' => 2,
+    );
+
+    public const SHOW_STATUS = array(
+        'deactivate' => 0,
+        'active' => 1,
+    );
+
+    /** @var Database */
+    protected $db, $slug;
 
     /**
      * BaseHttp constructor.
@@ -43,6 +84,7 @@ class BaseHttp extends BaseCore
         parent::__construct($options);
         $this->logger->setLoggerSubPath(__CLASS__);
         $this->db = new Database($options);
+        $this->slug = new SlugUrl();
     }
 
     protected function formatInputStartDate($inputData = array())
@@ -106,4 +148,61 @@ class BaseHttp extends BaseCore
 
         return $res;
     }
+
+    protected function formatPageNumber($inputData = array())
+    {
+        if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
+            return $inputData['page_number'];
+        }
+
+        return self::PAGINATE['page_number'];
+    }
+
+    protected function formatMaxResult($inputData = array())
+    {
+        if (isset($inputData['max_results']) && $inputData['max_results'] > 0) {
+            return $inputData['max_results'];
+        }
+
+        return self::PAGINATE['max_results'];
+    }
+
+    protected function formatStatus($inputData = array()): ?int
+    {
+        if (!empty($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
+            return $inputData['status'];
+        }
+
+        return null;
+    }
+
+    public function formatShow(array $inputData = array(), $field): int
+    {
+        if (isset($inputData[$field]) && in_array($inputData[$field], self::SHOW_STATUS,
+                true)) {
+            return $inputData[$field];
+        }
+
+        return self::SHOW_STATUS['deactivate'];
+    }
+
+    public function formatInput($first, $second): string
+    {
+        if (isset($this->inputData[$first])) {
+            $res = $this->inputData[$first];
+        } elseif (isset($this->inputData[$second])) {
+            $res = $this->inputData[$second];
+        } else {
+            $res = '';
+        }
+
+        return ($res);
+    }
+
+    // format input default value null
+    public function formatInputNull($field)
+    {
+        return empty($this->inputData[$field]) ? null : $this->inputData[$field];
+    }
+
 }

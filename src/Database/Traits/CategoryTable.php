@@ -5,18 +5,18 @@ namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
- * Trait ConfigTable
+ * Trait CategoryTable
  *
  * @package   nguyenanhung\Backend\BaseAPI\Database\Traits
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
-trait ConfigTable
+trait CategoryTable
 {
-    protected function configTable(): BaseModel
+    protected function categoryTable(): BaseModel
     {
-        // connect to config table
-        $table = 'config';
+        // connect to Category table
+        $table = 'category';
         $DB = $this->connection();
         $DB->setTable($table);
 
@@ -28,60 +28,52 @@ trait ConfigTable
      *
      * @param array $data
      *
-     * @return bool
+     * @return int
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 56:41
      */
-    public function createConfig(array $data = array()): bool
+    public function createCategory(array $data = array()): int
     {
-        $DB = $this->configTable();
+        $DB = $this->categoryTable();
 
         //create result
         $result = $DB->add($data);
         $DB->disconnect();
 
-        return $result !== 0;
+        return $result;
     }
 
-    public function  updateConfig(array $data = array()): int
+    public function updateCategory(array $data = array()): int
     {
-        // connect to config table
-        $DB = $this->configTable();
+        // connect to category table
+        $DB = $this->categoryTable();
 
-        //update config
+        //update category
         $result = $DB->update($data, $data['id']);
         $DB->disconnect();
 
         return $result;
     }
 
-    public function checkConfigExists($id): bool
+    public function checkCategoryExists($where): bool
     {
-        $DB = $this->configTable();
+        $DB = $this->categoryTable();
 
         //create result
-        $result = $DB->checkExists($id);
+        $result = $DB->checkExists($where);
         $DB->disconnect();
 
-        return $result === 1;
+        return $result;
     }
 
-    public function listConfig(array $data = array())
+    public function listCategory(array $data = array())
     {
-        // connect to config table
-        $DB = $this->configTable();
-
-        //get config data
+        // connect to category table
+        $DB = $this->categoryTable();
+        //get category data
         $result = $DB->getResult(
-            [
-                'where' =>
-                    [
-                        'field' => 'id',
-                        'operator' => 'like',
-                        'value' => $data['category'] . '%'
-                    ]
-            ],
+            [],
             '*',
             [
                 'limit' => $data['numberRecordOfPage'],
@@ -89,14 +81,15 @@ trait ConfigTable
                 'orderBy' => ['id' => 'desc']
             ]
         );
+
         $DB->disconnect();
 
         return $result;
     }
 
-    public function showConfig(array $data = array())
+    public function showCategory(array $data = array())
     {
-        $DB = $this->configTable();
+        $DB = $this->categoryTable();
         //show result
         $result = $DB->getInfo(
             [
@@ -108,7 +101,7 @@ trait ConfigTable
             ],
             'id',
             'array',
-            ['id','language','value','label','type','status']);
+            ['id','uuid','name','language','slugs','title','description','keywords','photo','parent','order_stt']);
 
         $DB->disconnect();
 

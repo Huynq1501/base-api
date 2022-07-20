@@ -5,18 +5,18 @@ namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
- * Trait ConfigTable
+ * Trait UserTable
  *
  * @package   nguyenanhung\Backend\BaseAPI\Database\Traits
  * @author    713uk13m <dev@nguyenanhung.com>
  * @copyright 713uk13m <dev@nguyenanhung.com>
  */
-trait ConfigTable
+trait UserTable
 {
-    protected function configTable(): BaseModel
+    protected function UserTable(): BaseModel
     {
-        // connect to config table
-        $table = 'config';
+        // connect to user table
+        $table = 'beetsoft_user';
         $DB = $this->connection();
         $DB->setTable($table);
 
@@ -33,32 +33,32 @@ trait ConfigTable
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 56:41
      */
-    public function createConfig(array $data = array()): bool
+    public function createUser(array $data = array()): int
     {
-        $DB = $this->configTable();
+        $DB = $this->UserTable();
 
         //create result
         $result = $DB->add($data);
         $DB->disconnect();
 
-        return $result !== 0;
+        return $result;
     }
 
-    public function  updateConfig(array $data = array()): int
+    public function updateUser(array $data = array()): int
     {
-        // connect to config table
-        $DB = $this->configTable();
+        // connect to user table
+        $DB = $this->UserTable();
 
-        //update config
+        //update user
         $result = $DB->update($data, $data['id']);
         $DB->disconnect();
 
         return $result;
     }
 
-    public function checkConfigExists($id): bool
+    public function checkUserExists($id): bool
     {
-        $DB = $this->configTable();
+        $DB = $this->UserTable();
 
         //create result
         $result = $DB->checkExists($id);
@@ -67,12 +67,12 @@ trait ConfigTable
         return $result === 1;
     }
 
-    public function listConfig(array $data = array())
+    public function listUser(array $data = array())
     {
-        // connect to config table
-        $DB = $this->configTable();
+        // connect to user table
+        $DB = $this->UserTable();
 
-        //get config data
+        //get user data
         $result = $DB->getResult(
             [
                 'where' =>
@@ -94,9 +94,9 @@ trait ConfigTable
         return $result;
     }
 
-    public function showConfig(array $data = array())
+    public function showUser(array $data = array())
     {
-        $DB = $this->configTable();
+        $DB = $this->UserTable();
         //show result
         $result = $DB->getInfo(
             [
@@ -108,7 +108,36 @@ trait ConfigTable
             ],
             'id',
             'array',
-            ['id','language','value','label','type','status']);
+            [
+                'id',
+                'department_id',
+                'parent',
+                'username',
+                'fullname',
+                'email',
+                'status',
+                'group_id',
+                'created_at',
+                'updated_at'
+            ]);
+
+        $DB->disconnect();
+
+        return $result;
+    }
+
+    public function deleteUser(array $data = array())
+    {
+        $DB = $this->UserTable();
+        //delete
+        $result = $DB->delete(
+            [
+                'id' => [
+                    'field' => 'id',
+                    'operator' => '=',
+                    'value' => $data['id']
+                ]
+            ]);
 
         $DB->disconnect();
 
