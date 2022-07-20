@@ -28,7 +28,7 @@ trait UserTable
      *
      * @param array $data
      *
-     * @return bool
+     * @return int
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 56:41
@@ -144,22 +144,21 @@ trait UserTable
         return $result;
     }
 
-    public function login(array $data = array())
+    public function checkUserLogin(array $data = array())
     {
         $DB = $this->UserTable();
         //check login by user or email
-        $userName = $DB->getInfo(
-            ['username' => ['field' => 'username', 'operator' => '=', 'value' => $data['account']]],
-            'username',
-            'array',
-            ['username', 'email', 'salt', 'password']
-        );
-        $email = $DB->getInfo(
-            ['email' => ['field' => 'email', 'operator' => '=', 'value' => $data['account']]],
-            'email',
-            'array',
-            ['username', 'email', 'salt', 'password']
-        );
+        $where = ['username' => ['field' => 'username', 'operator' => '=', 'value' => $data['account']]];
+        $field = 'username';
+        $format = 'array';
+        $select = ['username', 'email', 'salt', 'password'];
+        $userName = $DB->getInfo($where, $field, $format, $select);
+
+        $field = 'email';
+        $where = ['email' => ['field' => 'email', 'operator' => '=', 'value' => $data['account']]];
+        $email = $DB->getInfo($where, $field, $format, $select);
+
+        $DB->disconnect();
 
         if ($userName) {
             return $userName;
@@ -171,6 +170,5 @@ trait UserTable
 
         return false;
     }
-
 
 }

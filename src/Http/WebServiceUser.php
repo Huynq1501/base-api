@@ -5,6 +5,7 @@ namespace nguyenanhung\Backend\BaseAPI\Http;
 use Exception;
 use nguyenanhung\Classes\Helper\Filter;
 use nguyenanhung\Libraries\Password\Hash;
+use nguyenanhung\Libraries\Password\Password;
 use nguyenanhung\Validation\Validation;
 
 
@@ -39,6 +40,14 @@ class WebServiceUser extends BaseHttp
         'inCorrect' => 'Account or password is incorrect, please try again',
         'success' => ' successfully',
     );
+
+    protected function formatUserName($inputData = array())
+    {
+        if (empty($inputData['user_name'])) {
+            return implode('@', explode('@', $inputData['email'], -1));
+        }
+        return $inputData['user_name'];
+    }
 
     /**
      * @throws Exception
@@ -79,8 +88,7 @@ class WebServiceUser extends BaseHttp
         } else {
             $departmentID = (isset($this->inputData['department_id']) && is_int($this->inputData['department_id'])) ? $this->inputData['department_id'] : self::DEFAULT_ID;
             $parentID = (isset($this->inputData['parent']) && is_int($this->inputData['parent'])) ? $this->inputData['parent'] : self::DEFAULT_ID;
-            $userName = empty($this->inputData['user_name']) ? implode('@',
-                explode('@', $this->inputData['email'], -1)) : $this->inputData['user_name'];
+            $userName = $this->formatUserName($this->inputData);
             $fullName = $this->inputData['fullname'] ?? null;
             $address = $this->inputData['address'] ?? null;
             $email = $this->inputData['email'] ?? null;
@@ -101,7 +109,7 @@ class WebServiceUser extends BaseHttp
 
             // get user role
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($userName . '$' . $fullName . '$' . $address . '$' . $email . '$' . $phone . '$' . $username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($userName . self::KEY . $fullName . self::KEY . $address . self::KEY . $email . self::KEY . $phone . self::KEY . $username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -111,7 +119,7 @@ class WebServiceUser extends BaseHttp
                 );
             } else {
                 $salt = Hash::generateUserSaltKey();
-                $password = Hash::generateHashValue($password . $salt);
+                $password = Password::hashPassword($password . $salt);
                 $checkExitDepartment = $this->db->checkExitsRecords(['id' => $departmentID],
                     'department_structure');
                 $checkExitGroup = $this->db->checkExitsRecords(['id' => $groupID],
@@ -240,7 +248,7 @@ class WebServiceUser extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . "$" . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -294,7 +302,7 @@ class WebServiceUser extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -352,7 +360,7 @@ class WebServiceUser extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . "$" . $username . "$" . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -390,9 +398,10 @@ class WebServiceUser extends BaseHttp
     /**
      * @throws Exception
      */
-    public function login(): WebServiceUser
+    public function userLogin(): WebServiceUser
     {
-        $isValid = Validation::is_valid($this->inputData, [
+        $inputData = $this->inputData;
+        $isValid = Validation::is_valid($inputData, [
             'user' => 'required',
             'password' => 'required',
         ], [
@@ -404,54 +413,54 @@ class WebServiceUser extends BaseHttp
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
                 'desc' => json_encode($isValid),
-                'inputData' => $this->inputData
+                'inputData' => $inputData
             );
         } else {
-            $result = $this->db->login(
-                [
-                    'account' => $this->inputData['user'],
-                    'password' => $this->inputData['password'],
-                ]
-            );
+            $result = $this->db->checkUserLogin(['account' => $inputData['user']]);
+
+            // check account exists in the database
             if (!$result) {
                 $response = array(
                     'result' => self::EXIT_CODE['notFound'],
                     'desc' => self::MES_AUTH['notFound'],
-                    'inputData' => $this->inputData
+                    'inputData' => $inputData
                 );
             } else {
-                $password = $this->inputData['password'] . $result->salt;
-                if (Hash::generateHashValue($password) === $result->password) {
+                $password = $inputData['password'] . $result->salt;
+
+                if (Password::verifyPassword($password, $result->password)) {
                     $response = array(
                         'result' => self::EXIT_CODE['success'],
                         'desc' => self::ACTION['login'] . self::MES_AUTH['success'],
-                        'inputData' => $this->inputData
                     );
                 } else {
                     $response = array(
                         'result' => self::EXIT_CODE['notFound'],
                         'desc' => self::MES_AUTH['inCorrect'],
-                        'inputData' => $this->inputData
+                        'inputData' => $inputData
                     );
                 }
             }
         }
 
         $this->logger->info('WebAuth.login',
-            'Input data: ' . json_encode($this->inputData) . ' -> Response: ' . json_encode($response));
+            'Input data: ' . json_encode($inputData) . ' -> Response: ' . json_encode($response));
         $this->response = $response;
 
         return $this;
     }
 
-    public function register(): WebServiceUser
+    /**
+     * @throws Exception
+     */
+    public function userRegister(): WebServiceUser
     {
         $inputData = $this->inputData;
         $isValid = Validation::is_valid($inputData, [
             'fullname' => 'required',
             'email' => 'required|valid_email',
             'password' => 'required|between_len,6;32',
-            'confirm_password' => 'required',
+            'confirm_password' => 'required|equalsfield,password',
             'phone' => 'required|between_len,10;11|numeric',
         ], [
             'fullname' => ['required' => 'Fill the fullname field please.'],
@@ -481,8 +490,7 @@ class WebServiceUser extends BaseHttp
             );
         } else {
             $salt = Hash::generateUserSaltKey();
-            $userName = empty($inputData['user_name']) ? implode('@',
-                explode('@', $inputData['email'], -1)) : $inputData['user_name'];
+            $userName = $this->formatUserName($inputData);
             $data = array(
                 'department_id' => empty($inputData['department_id']) ? self::DEFAULT_ID : $inputData['department_id'],
                 'parent' => empty($inputData['parent']) ? self::DEFAULT_ID : $inputData['parent'],
@@ -493,7 +501,7 @@ class WebServiceUser extends BaseHttp
                 'status' => self::STATUS['wait_active'],
                 'avatar' => null,
                 'group_id' => self::DEFAULT_ID,
-                'password' => Hash::generateHashValue($inputData['password'] . $salt),
+                'password' => Password::hashPassword($inputData['password'] . $salt),
                 'reset_password' => 0,
                 'updated_pass' => Date('Y-m-d H:i:s'),
                 'phone' => $inputData['phone'],
@@ -512,6 +520,8 @@ class WebServiceUser extends BaseHttp
 
             $uniEmail = $this->db->checkExitsRecords(['email' => $inputData['email']], 'beetsoft_user');
             $uniUserName = $this->db->checkExitsRecords(['username' => $userName], 'beetsoft_user');
+
+            // Check if the login account matches any username or email in the DB.
             if ($uniEmail || $uniUserName) {
                 $response = array(
                     'result' => self::EXIT_CODE['notUnique'],
