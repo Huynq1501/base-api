@@ -1,6 +1,6 @@
 {
     "type": "library",
-    "name": "nguyenanhung/template-backend-package",
+    "name": "huynq/base-api",
     "description": "Structure Repository Template for Backend API Service Package",
     "keywords": [
         "backend",
