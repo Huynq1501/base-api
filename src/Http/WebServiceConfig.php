@@ -35,7 +35,13 @@ class WebServiceConfig extends BaseHttp
         $this->logger->setLoggerSubPath(__CLASS__);
     }
 
-    protected function formatType($inputData = array()): int
+    /**
+     * format type config
+     * @param array $inputData
+     *
+     * @return int
+     */
+    protected function formatType(array $inputData = array()): int
     {
         if (in_array($inputData['type'], self::TYPE, true)) {
             return $inputData['type'];
@@ -44,6 +50,10 @@ class WebServiceConfig extends BaseHttp
         return 0;
     }
 
+    /**
+     * Function create or update config
+     * @return $this
+     */
     public function createOrUpdate(): WebServiceConfig
     {
         $required = ['id', 'value', 'language'];
@@ -73,7 +83,7 @@ class WebServiceConfig extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . self::KEY . $value . self::KEY . $language . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::PREFIX_AUTH . $value . self::PREFIX_AUTH . $language . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -131,6 +141,10 @@ class WebServiceConfig extends BaseHttp
 
     }
 
+    /**
+     * Function list config with paginate
+     * @return $this
+     */
     public function list(): WebServiceConfig
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['category']);
@@ -156,7 +170,7 @@ class WebServiceConfig extends BaseHttp
                 );
             } else {
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($category . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($category . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -189,6 +203,10 @@ class WebServiceConfig extends BaseHttp
         return $this;
     }
 
+    /**
+     * Function view detail config
+     * @return $this
+     */
     public function show(): WebServiceConfig
     {
         $required = ['id', 'language'];
@@ -214,7 +232,7 @@ class WebServiceConfig extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . self::KEY . $language . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::PREFIX_AUTH . $language . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(

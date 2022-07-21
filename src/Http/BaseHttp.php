@@ -36,7 +36,7 @@ class BaseHttp extends BaseCore
 
     public const STATUS_LEVEL = [0, 1];
 
-    public const KEY = '$';
+    public const PREFIX_AUTH = '$';
 
     public const MESSAGES = array(
         'invalidSignature' => 'Sai chu ky xac thuc',
@@ -117,7 +117,12 @@ class BaseHttp extends BaseCore
         return $endDate;
     }
 
-    protected function formatInputUsername($inputData = array())
+    /**
+     * function format username login
+     * @param array $inputData
+     * @return mixed|null
+     */
+    protected function formatInputUsername(array $inputData = array())
     {
         if (isset($inputData['username'])) {
             $res = $inputData['username'];
@@ -134,7 +139,12 @@ class BaseHttp extends BaseCore
         return $res;
     }
 
-    protected function formatInputSignature($inputData = array())
+    /**
+     * Function get signature
+     * @param array $inputData
+     * @return mixed|null
+     */
+    protected function formatInputSignature(array $inputData = array())
     {
         if (isset($inputData['signature'])) {
             $res = $inputData['signature'];
@@ -151,7 +161,12 @@ class BaseHttp extends BaseCore
         return $res;
     }
 
-    protected function formatPageNumber($inputData = array())
+    /**
+     * Function format page number
+     * @param array $inputData
+     * @return int|mixed
+     */
+    protected function formatPageNumber(array $inputData = array())
     {
         if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
             return $inputData['page_number'];
@@ -160,6 +175,11 @@ class BaseHttp extends BaseCore
         return self::PAGINATE['page_number'];
     }
 
+    /**
+     * Function format max result in page
+     * @param $inputData
+     * @return int|mixed
+     */
     protected function formatMaxResult($inputData = array())
     {
         if (isset($inputData['max_results']) && $inputData['max_results'] > 0) {
@@ -169,6 +189,11 @@ class BaseHttp extends BaseCore
         return self::PAGINATE['max_results'];
     }
 
+    /**
+     * Function format status
+     * @param $inputData
+     * @return int|null
+     */
     protected function formatStatus($inputData = array()): ?int
     {
         if (!empty($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
@@ -178,6 +203,12 @@ class BaseHttp extends BaseCore
         return null;
     }
 
+    /**
+     * Function format show or hidden
+     * @param array $inputData
+     * @param $field
+     * @return int
+     */
     public function formatShow(array $inputData = array(), $field): int
     {
         if (isset($inputData[$field]) && in_array($inputData[$field], self::SHOW_STATUS,
@@ -188,6 +219,12 @@ class BaseHttp extends BaseCore
         return self::SHOW_STATUS['deactivate'];
     }
 
+    /**
+     * Function format if param 1 does not exist, assign param 1 equal to param 2
+     * @param $first
+     * @param $second
+     * @return string
+     */
     public function formatInput($first, $second): string
     {
         if (isset($this->inputData[$first])) {
@@ -201,7 +238,11 @@ class BaseHttp extends BaseCore
         return ($res);
     }
 
-    // format input default value null
+    /**
+     * Declared function if not initialized input returns null
+     * @param $field
+     * @return mixed|null
+     */
     public function formatInputNull($field)
     {
         return empty($this->inputData[$field]) ? null : $this->inputData[$field];

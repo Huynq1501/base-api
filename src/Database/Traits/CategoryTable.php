@@ -2,6 +2,7 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
+use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -13,7 +14,11 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 trait CategoryTable
 {
-    protected function categoryTable(): BaseModel
+    /**
+     * Connect to the category table in the database
+     * @return BaseModel
+     */
+    protected function initCategoryTable(): BaseModel
     {
         // connect to Category table
         $table = 'category';
@@ -24,7 +29,7 @@ trait CategoryTable
     }
 
     /**
-     * Function create
+     * Function create category
      *
      * @param array $data
      *
@@ -35,7 +40,7 @@ trait CategoryTable
      */
     public function createCategory(array $data = array()): int
     {
-        $DB = $this->categoryTable();
+        $DB = $this->initCategoryTable();
 
         //create result
         $result = $DB->add($data);
@@ -44,10 +49,15 @@ trait CategoryTable
         return $result;
     }
 
+    /**
+     * Function update category
+     * @param array $data
+     * @return int
+     */
     public function updateCategory(array $data = array()): int
     {
         // connect to category table
-        $DB = $this->categoryTable();
+        $DB = $this->initCategoryTable();
 
         //update category
         $result = $DB->update($data, $data['id']);
@@ -56,9 +66,14 @@ trait CategoryTable
         return $result;
     }
 
+    /**
+     * Function to check category exists or not
+     * @param $where
+     * @return bool
+     */
     public function checkCategoryExists($where): bool
     {
-        $DB = $this->categoryTable();
+        $DB = $this->initCategoryTable();
 
         //create result
         $result = $DB->checkExists($where);
@@ -67,42 +82,75 @@ trait CategoryTable
         return $result;
     }
 
+    /**
+     * Function get list category with paginate
+     * @param array $data
+     * @return array|Collection|object|string
+     */
     public function listCategory(array $data = array())
     {
         // connect to category table
-        $DB = $this->categoryTable();
+        $DB = $this->initCategoryTable();
         //get category data
-        $result = $DB->getResult(
-            [],
-            '*',
-            [
-                'limit' => $data['numberRecordOfPage'],
-                'offset' => $data['pageNumber'],
-                'orderBy' => ['id' => 'desc']
-            ]
-        );
+
+        $where = array();
+        $select = [
+            'id',
+            'name',
+            'language',
+            'slugs',
+            'title',
+            'description',
+            'keywords',
+            'photo',
+            'level',
+            'status',
+            'created_at',
+            'updated_at'
+        ];
+        $option = [
+            'limit' => $data['numberRecordOfPage'],
+            'offset' => $data['pageNumber'],
+            'orderBy' => ['id' => 'desc']
+        ];
+        $result = $DB->getResult($where, $select, $option);
 
         $DB->disconnect();
 
         return $result;
     }
 
+    /**
+     * Function show category by category id
+     * @param array $data
+     * @return array|Collection|object|string|null
+     */
     public function showCategory(array $data = array())
     {
-        $DB = $this->categoryTable();
+        $DB = $this->initCategoryTable();
         //show result
-        $result = $DB->getInfo(
-            [
-                'id' => [
-                    'field' => 'id',
-                    'operator' => '=',
-                    'value' => $data['id']
-                ]
-            ],
+        $where = [
+            'id' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['id']
+            ]
+        ];
+        $select = [
             'id',
-            'array',
-            ['id','uuid','name','language','slugs','title','description','keywords','photo','parent','order_stt']);
+            'uuid',
+            'name',
+            'language',
+            'slugs',
+            'title',
+            'description',
+            'keywords',
+            'photo',
+            'parent',
+            'order_stt'
+        ];
 
+        $result = $DB->getInfo($where, 'id', 'array', $select);
         $DB->disconnect();
 
         return $result;

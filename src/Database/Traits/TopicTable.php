@@ -2,6 +2,7 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
+use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -13,7 +14,11 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 trait TopicTable
 {
-    protected function topicTable(): BaseModel
+    /**
+     * Connect to the topic table in the database
+     * @return BaseModel
+     */
+    protected function initTopicTable(): BaseModel
     {
         // connect to Topic table
         $table = 'topic';
@@ -24,8 +29,7 @@ trait TopicTable
     }
 
     /**
-     * Function create
-     *
+     * Function create topic
      * @param array $data
      *
      * @return int
@@ -35,7 +39,7 @@ trait TopicTable
      */
     public function createTopic(array $data = array()): int
     {
-        $DB = $this->topicTable();
+        $DB = $this->initTopicTable();
 
         //create result
         $result = $DB->add($data);
@@ -44,10 +48,15 @@ trait TopicTable
         return $result;
     }
 
+    /**
+     * Function update topic
+     * @param array $data
+     * @return int
+     */
     public function updateTopic(array $data = array()): int
     {
         // connect to topic table
-        $DB = $this->topicTable();
+        $DB = $this->initTopicTable();
 
         //update topic
         $result = $DB->update($data, $data['id']);
@@ -56,9 +65,14 @@ trait TopicTable
         return $result;
     }
 
+    /**
+     * Function to check topic exists or not
+     * @param $where
+     * @return bool
+     */
     public function checkTopicExists($where): bool
     {
-        $DB = $this->topicTable();
+        $DB = $this->initTopicTable();
 
         //create result
         $result = $DB->checkExists($where);
@@ -67,41 +81,46 @@ trait TopicTable
         return $result === 1;
     }
 
+    /**
+     * Function get list topic with paginate
+     * @param array $data
+     * @return array|Collection|object|string
+     */
     public function listTopic(array $data = array())
     {
         // connect to topic table
-        $DB = $this->topicTable();
+        $DB = $this->initTopicTable();
         //get topic data
-        $result = $DB->getResult(
-            [],
-            '*',
-            [
-                'limit' => $data['numberRecordOfPage'],
-                'offset' => $data['pageNumber'],
-                'orderBy' => ['id' => 'desc']
-            ]
-        );
-
+        $select = ['id', 'name', 'is_hot', 'slugs', 'title', 'status', 'description', 'content', 'keywords', 'photo'];
+        $option = [
+            'limit' => $data['numberRecordOfPage'],
+            'offset' => $data['pageNumber'],
+            'orderBy' => ['id' => 'desc']
+        ];
+        $result = $DB->getResult(array(), $select, $option);
         $DB->disconnect();
 
         return $result;
     }
 
+    /**
+     * Function show topic by topic id
+     * @param array $data
+     * @return array|Collection|object|string|null
+     */
     public function showTopic(array $data = array())
     {
-        $DB = $this->topicTable();
+        $DB = $this->initTopicTable();
         //show result
-        $result = $DB->getInfo([
+        $where = [
             'id' => [
                 'field' => 'id',
                 'operator' => '=',
                 'value' => $data['id']
             ]
-        ],
-            'id',
-            'array',
-            ['id', 'name', 'is_hot', 'slugs', 'title', 'status', 'description', 'content', 'keywords', 'photo']);
-
+        ];
+        $select = ['id', 'name', 'is_hot', 'slugs', 'title', 'status', 'description', 'content', 'keywords', 'photo'];
+        $result = $DB->getInfo($where, 'id', 'array', $select);
         $DB->disconnect();
 
         return $result;

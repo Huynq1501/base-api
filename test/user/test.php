@@ -70,35 +70,35 @@ $registerData = [
     'phone' => '0961618660',
 ];
 
-////api  create or update
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//api  create or update
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 //api list
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($listData)
-//    ->list();
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($listData)
+    ->list();
 
-////api show
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($showData)
-//    ->show();
+//api show
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($showData)
+    ->show();
 
-////api delete
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($deleteData)
-//    ->delete();
+//api delete
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($deleteData)
+    ->delete();
 
-////api login
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($loginData)
-//    ->userLogin();
+//api login
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($loginData)
+    ->userLogin();
 //
 //register
 $api = new WebServiceUser($config['OPTIONS']);
