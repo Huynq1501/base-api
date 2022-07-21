@@ -2,6 +2,7 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
+use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -13,7 +14,11 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 trait TagTable
 {
-    protected function tagTable(): BaseModel
+    /**
+     * Connect to the tag table in the database
+     * @return BaseModel
+     */
+    protected function initTagTable(): BaseModel
     {
         // connect to Tag table
         $table = 'tag';
@@ -24,7 +29,7 @@ trait TagTable
     }
 
     /**
-     * Function create
+     * Function create tag
      *
      * @param array $data
      *
@@ -35,7 +40,7 @@ trait TagTable
      */
     public function createTag(array $data = array()): int
     {
-        $DB = $this->tagTable();
+        $DB = $this->initTagTable();
 
         //create result
         $result = $DB->add($data);
@@ -44,10 +49,15 @@ trait TagTable
         return $result;
     }
 
+    /**
+     * Function update tag
+     * @param array $data
+     * @return int
+     */
     public function updateTag(array $data = array()): int
     {
         // connect to tag table
-        $DB = $this->tagTable();
+        $DB = $this->initTagTable();
 
         //update tag
         $result = $DB->update($data, $data['id']);
@@ -56,9 +66,14 @@ trait TagTable
         return $result;
     }
 
+    /**
+     * Function to check tag exists or not
+     * @param $where
+     * @return bool
+     */
     public function checkTagExists($where): bool
     {
-        $DB = $this->tagTable();
+        $DB = $this->initTagTable();
 
         //create result
         $result = $DB->checkExists($where);
@@ -67,41 +82,72 @@ trait TagTable
         return $result === 1;
     }
 
+    /**
+     * Function get list tag with paginate
+     * @param array $data
+     * @return array|Collection|object|string
+     */
     public function listTag(array $data = array())
     {
         // connect to tag table
-        $DB = $this->tagTable();
+        $DB = $this->initTagTable();
         //get tag data
-        $result = $DB->getResult(
-            [],
-            '*',
-            [
-                'limit' => $data['numberRecordOfPage'],
-                'offset' => $data['pageNumber'],
-                'orderBy' => ['id' => 'desc']
-            ]
-        );
-
+        $select = [
+            'id',
+            'name',
+            'is_hot',
+            'slugs',
+            'language',
+            'title',
+            'status',
+            'description',
+            'keywords',
+            'photo',
+            'created_at',
+            'updated_at'
+        ];
+        $option = [
+            'limit' => $data['numberRecordOfPage'],
+            'offset' => $data['pageNumber'],
+            'orderBy' => ['id' => 'desc']
+        ];
+        $result = $DB->getResult(array(), $select, $option);
         $DB->disconnect();
 
         return $result;
     }
 
+    /**
+     * Function show tag by tag id
+     * @param array $data
+     * @return array|Collection|object|string|null
+     */
     public function showTag(array $data = array())
     {
-        $DB = $this->tagTable();
+        $DB = $this->initTagTable();
         //show result
-        $result = $DB->getInfo([
+        $where = [
             'id' => [
                 'field' => 'id',
                 'operator' => '=',
                 'value' => $data['id']
             ]
-        ],
+        ];
+        $select = [
             'id',
-            'array',
-            ['id', 'name', 'is_hot', 'slugs','language', 'title', 'status', 'description', 'keywords', 'photo','created_at','updated_at']);
-
+            'name',
+            'is_hot',
+            'slugs',
+            'language',
+            'title',
+            'status',
+            'description',
+            'keywords',
+            'photo',
+            'created_at',
+            'updated_at'
+        ];
+        $result = $DB->getInfo($where, 'id', 'array', $select);
         $DB->disconnect();
 
         return $result;
