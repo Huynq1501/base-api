@@ -2,6 +2,7 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
+use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -13,7 +14,11 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 trait OptionTable
 {
-    protected function optionTable(): BaseModel
+    /**
+     * Connect to the option table in the database
+     * @return BaseModel
+     */
+    protected function initOptionTable(): BaseModel
     {
         // connect to Option table
         $table = 'option';
@@ -24,10 +29,8 @@ trait OptionTable
     }
 
     /**
-     * Function create
-     *
+     * Function create option
      * @param array $data
-     *
      * @return int
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
@@ -35,7 +38,7 @@ trait OptionTable
      */
     public function createOption(array $data = array()): int
     {
-        $DB = $this->optionTable();
+        $DB = $this->initOptionTable();
 
         //create result
         $result = $DB->add($data);
@@ -44,10 +47,15 @@ trait OptionTable
         return $result;
     }
 
+    /**
+     * Function update option
+     * @param array $data
+     * @return int
+     */
     public function updateOption(array $data = array()): int
     {
         // connect to option table
-        $DB = $this->optionTable();
+        $DB = $this->initOptionTable();
 
         //update option
         $result = $DB->update($data, $data['id']);
@@ -56,9 +64,14 @@ trait OptionTable
         return $result;
     }
 
+    /**
+     * Function to check option exists or not
+     * @param $where
+     * @return bool
+     */
     public function checkOptionExists($where): bool
     {
-        $DB = $this->optionTable();
+        $DB = $this->initOptionTable();
 
         //create result
         $result = $DB->checkExists($where);
@@ -67,42 +80,47 @@ trait OptionTable
         return $result === 1;
     }
 
+    /**
+     * Function get list option with paginate
+     * @param array $data
+     * @return array|Collection|object|string
+     */
     public function listOption(array $data = array())
     {
         // connect to option table
-        $DB = $this->optionTable();
+        $DB = $this->initOptionTable();
         //get option data
-        $result = $DB->getResult(
-            [],
-            '*',
-            [
-                'limit' => $data['numberRecordOfPage'],
-                'offset' => $data['pageNumber'],
-                'orderBy' => ['id' => 'desc']
-            ]
-        );
-
+        $select = ['id', 'name', 'value', 'status', 'created_at'];
+        $option = [
+            'limit' => $data['numberRecordOfPage'],
+            'offset' => $data['pageNumber'],
+            'orderBy' => ['id' => 'desc']
+        ];
+        $result = $DB->getResult(array(), $select, $option);
         $DB->disconnect();
 
         return $result;
     }
 
+    /**
+     * Function show option by option id
+     * @param array
+     * @return array|Collection|object|string|null
+     */
     public function showOption(array $data = array())
     {
-        $DB = $this->optionTable();
+        $DB = $this->initOptionTable();
         //show result
-        $result = $DB->getInfo(
-            [
-                'id' => [
-                    'field' => 'id',
-                    'operator' => '=',
-                    'value' => $data['id']
-                ]
-            ],
-            'id',
-            'array',
-            ['id','name','value','status']);
+        $where = [
+            'id' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['id']
+            ]
+        ];
+        $select = ['id', 'name', 'value', 'status', 'created_at'];
 
+        $result = $DB->getInfo($where, 'id', 'array', $select);
         $DB->disconnect();
 
         return $result;

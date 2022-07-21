@@ -35,7 +35,12 @@ class WebServiceCategory extends BaseHttp
         $this->logger->setLoggerSubPath(__CLASS__);
     }
 
-    protected function formatParentID($inputData = array()): int
+    /**
+     * format category parent id
+     * @param array $inputData
+     * @return int
+     */
+    protected function formatParentID(array $inputData = array()): int
     {
         if (isset($inputData['parent']) && is_int($inputData['parent'])) {
             $checkExits = $this->db->checkCategoryExists(
@@ -50,6 +55,10 @@ class WebServiceCategory extends BaseHttp
         return 0;
     }
 
+    /**
+     * create or update category
+     * @return $this
+     */
     public function createOrUpdate(): WebServiceCategory
     {
         $required = ['name', 'title', 'parent'];
@@ -89,7 +98,7 @@ class WebServiceCategory extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($name . self::KEY . $title . self::KEY . $keywords . self::KEY . $description . self::KEY . $parent . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($name . self::PREFIX_AUTH . $title . self::PREFIX_AUTH . $keywords . self::PREFIX_AUTH . $description . self::PREFIX_AUTH . $parent . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -176,6 +185,10 @@ class WebServiceCategory extends BaseHttp
 
     }
 
+    /**
+     * Function list category with paginate
+     * @return $this
+     */
     public function list(): WebServiceCategory
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
@@ -191,7 +204,7 @@ class WebServiceCategory extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::PREFIX_AUTH . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -220,6 +233,10 @@ class WebServiceCategory extends BaseHttp
         return $this;
     }
 
+    /**
+     * view detail category
+     * @return $this
+     */
     public function show(): WebServiceCategory
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
@@ -243,7 +260,7 @@ class WebServiceCategory extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(

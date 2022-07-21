@@ -29,6 +29,10 @@ class WebServiceOption extends BaseHttp
         $this->logger->setLoggerSubPath(__CLASS__);
     }
 
+    /**
+     * Function create or update option
+     * @return $this
+     */
     public function createOrUpdate(): WebServiceOption
     {
         $required = ['name', 'value', 'status'];
@@ -56,7 +60,7 @@ class WebServiceOption extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($name . self::KEY . $value . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($name . self::PREFIX_AUTH . $value . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -133,9 +137,12 @@ class WebServiceOption extends BaseHttp
 
     }
 
+    /**
+     * Function list option with paginate
+     * @return $this
+     */
     public function list(): WebServiceOption
     {
-
         $pageNumber = $this->formatPageNumber($this->inputData);
         $numberRecordOfPage = $this->formatMaxResult($this->inputData);
         $username = $this->formatInputUsername($this->inputData);
@@ -149,7 +156,7 @@ class WebServiceOption extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::PREFIX_AUTH . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -178,6 +185,10 @@ class WebServiceOption extends BaseHttp
         return $this;
     }
 
+    /**
+     * Function view detail option
+     * @return $this
+     */
     public function show(): WebServiceOption
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
@@ -201,7 +212,7 @@ class WebServiceOption extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(

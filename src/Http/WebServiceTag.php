@@ -42,7 +42,12 @@ class WebServiceTag extends BaseHttp
         $this->logger->setLoggerSubPath(__CLASS__);
     }
 
-    protected function formatIsHot($inputData = array()): int
+    /**
+     * Function format field is_hot tag
+     * @param array $inputData
+     * @return int
+     */
+    protected function formatIsHot(array $inputData = array()): int
     {
         if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT, true)) {
             return $inputData['is_hot'];
@@ -51,7 +56,12 @@ class WebServiceTag extends BaseHttp
         return 0;
     }
 
-    protected function formatPhoto($inputData = array())
+    /**
+     * Function format photo
+     * @param array $inputData
+     * @return false|string|null
+     */
+    protected function formatPhoto(array $inputData = array())
     {
         if (isset($inputData['photo'])) {
             return json_encode(
@@ -64,6 +74,10 @@ class WebServiceTag extends BaseHttp
         return null;
     }
 
+    /**
+     * Function create or update tag
+     * @return $this
+     */
     public function createOrUpdate(): WebServiceTag
     {
         $required = ['name', 'photo', 'status'];
@@ -79,7 +93,7 @@ class WebServiceTag extends BaseHttp
             $status = $this->formatStatus($this->inputData);
             $isHot = $this->formatIsHot($this->inputData);
             $name = $this->inputData['name'] ?? null;
-            $slugs = $this->slug->slugify($this->formatInput('slugs','name'));
+            $slugs = $this->slug->slugify($this->formatInput('slugs', 'name'));
             $language = $this->inputData['language'] ?? self::DEFAULT_LANGUAGE;
             $keywords = $this->formatInput('keywords', 'name');
             $title = $this->formatInput('title', 'name');
@@ -97,7 +111,7 @@ class WebServiceTag extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($name . self::KEY . $language . self::KEY . $title . self::KEY . $keywords . self::KEY . $photo . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($name . self::PREFIX_AUTH . $language . self::PREFIX_AUTH . $title . self::PREFIX_AUTH . $keywords . self::PREFIX_AUTH . $photo . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -184,6 +198,10 @@ class WebServiceTag extends BaseHttp
 
     }
 
+    /**
+     * Function list tag with paginate
+     * @return $this
+     */
     public function list(): WebServiceTag
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
@@ -199,7 +217,7 @@ class WebServiceTag extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::PREFIX_AUTH . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -228,6 +246,10 @@ class WebServiceTag extends BaseHttp
         return $this;
     }
 
+    /**
+     * Function view detail tag
+     * @return $this
+     */
     public function show(): WebServiceTag
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
@@ -251,7 +273,7 @@ class WebServiceTag extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
