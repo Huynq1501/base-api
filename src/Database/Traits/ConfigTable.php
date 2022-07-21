@@ -2,6 +2,7 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
+use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -13,7 +14,11 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 trait ConfigTable
 {
-    protected function configTable(): BaseModel
+    /**
+     * Connect to the config table in the database
+     * @return BaseModel
+     */
+    protected function initConfigTable(): BaseModel
     {
         // connect to config table
         $table = 'config';
@@ -24,10 +29,8 @@ trait ConfigTable
     }
 
     /**
-     * Function create
-     *
+     * Function create config
      * @param array $data
-     *
      * @return bool
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
@@ -35,7 +38,7 @@ trait ConfigTable
      */
     public function createConfig(array $data = array()): bool
     {
-        $DB = $this->configTable();
+        $DB = $this->initConfigTable();
 
         //create result
         $result = $DB->add($data);
@@ -44,10 +47,15 @@ trait ConfigTable
         return $result !== 0;
     }
 
-    public function  updateConfig(array $data = array()): int
+    /**
+     * Function update config
+     * @param array $data
+     * @return int
+     */
+    public function updateConfig(array $data = array()): int
     {
         // connect to config table
-        $DB = $this->configTable();
+        $DB = $this->initConfigTable();
 
         //update config
         $result = $DB->update($data, $data['id']);
@@ -56,9 +64,14 @@ trait ConfigTable
         return $result;
     }
 
+    /**
+     * Function to check config exists or not
+     * @param $id
+     * @return bool
+     */
     public function checkConfigExists($id): bool
     {
-        $DB = $this->configTable();
+        $DB = $this->initConfigTable();
 
         //create result
         $result = $DB->checkExists($id);
@@ -67,49 +80,55 @@ trait ConfigTable
         return $result === 1;
     }
 
+    /**
+     * Function get list config with paginate
+     * @param array $data
+     * @return array|Collection|object|string
+     */
     public function listConfig(array $data = array())
     {
         // connect to config table
-        $DB = $this->configTable();
-
+        $DB = $this->initConfigTable();
+        $where = [
+            'id' =>
+                [
+                    'field' => 'id',
+                    'operator' => 'like',
+                    'value' => $data['category'] . '%'
+                ]
+        ];
+        $select = ['id', 'language', 'value', 'label', 'type', 'status'];
+        $option = [
+            'limit' => $data['numberRecordOfPage'],
+            'offset' => $data['pageNumber'],
+            'orderBy' => ['id' => 'desc']
+        ];
         //get config data
-        $result = $DB->getResult(
-            [
-                'where' =>
-                    [
-                        'field' => 'id',
-                        'operator' => 'like',
-                        'value' => $data['category'] . '%'
-                    ]
-            ],
-            '*',
-            [
-                'limit' => $data['numberRecordOfPage'],
-                'offset' => $data['pageNumber'],
-                'orderBy' => ['id' => 'desc']
-            ]
-        );
+        $result = $DB->getResult($where, $select, $option);
         $DB->disconnect();
 
         return $result;
     }
 
+    /**
+     * Function show config by config id
+     * @param array $data
+     * @return array|Collection|object|string|null
+     */
     public function showConfig(array $data = array())
     {
-        $DB = $this->configTable();
+        $DB = $this->initConfigTable();
         //show result
-        $result = $DB->getInfo(
-            [
-                'id' => [
-                    'field' => 'id',
-                    'operator' => '=',
-                    'value' => $data['id']
-                ]
-            ],
-            'id',
-            'array',
-            ['id','language','value','label','type','status']);
+        $where = [
+            'id' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['id']
+            ]
+        ];
+        $select = ['id', 'language', 'value', 'label', 'type', 'status'];
 
+        $result = $DB->getInfo($where, 'id', 'array', $select);
         $DB->disconnect();
 
         return $result;

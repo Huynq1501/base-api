@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__ . '/../config.php';
 
 $inputData = [
-//    'id' => 9,
+//    'id' => 30,
 //    'department_id' => 10,
 //    'parent' => 4,
     'status' => 1,
@@ -62,49 +62,49 @@ $loginData = [
 ];
 
 $registerData = [
-//    'user_name' => 'huynq13',
+//    'user_name' => 'huynq150111',
     'fullname' => 'Nham Quang Huy',
-    'email' => 'huynq14@beetsoft.com.vn',
+    'email' => 'huynq15011111@beetsoft.com.vn',
     'password' => 'Hippo99',
     'confirm_password' => 'Hippo99',
     'phone' => '0961618660',
 ];
 
-////api  create or update
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//api  create or update
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 //api list
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($listData)
-//    ->list();
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($listData)
+    ->list();
 
-////api show
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($showData)
-//    ->show();
+//api show
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($showData)
+    ->show();
 
-////api delete
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($deleteData)
-//    ->delete();
+//api delete
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($deleteData)
+    ->delete();
 
-////api login
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($loginData)
-//    ->login();
-
+//api login
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($loginData)
+    ->userLogin();
+//
 //register
 $api = new WebServiceUser($config['OPTIONS']);
 $api->setSdkConfig($config);
 $api->setInputData($registerData)
-    ->register();
+    ->userRegister();
 
 echo "<pre>";
 print_r($api->getResponse());

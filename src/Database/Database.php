@@ -23,7 +23,7 @@ use nguyenanhung\MyDatabase\Model\BaseModel;
  */
 class Database extends BaseCore
 {
-    use SignatureTable,ConfigTable,OptionTable,TopicTable,CategoryTable,TagTable,UserTable,UserGroupTable,DepartmentTable;
+    use SignatureTable,ConfigTable,OptionTable,TopicTable,CategoryTable,TagTable,UserTable;
 
     /** @var array $database */
     protected $database,$table;

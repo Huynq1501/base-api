@@ -36,7 +36,12 @@ class WebServiceTopic extends BaseHttp
         $this->logger->setLoggerSubPath(__CLASS__);
     }
 
-    protected function formatIsHot($inputData = array()): int
+    /**
+     * Function format field is_hot
+     * @param array $inputData
+     * @return int
+     */
+    protected function formatIsHot(array $inputData = array()): int
     {
         if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT, true)) {
             return $inputData['is_hot'];
@@ -45,7 +50,12 @@ class WebServiceTopic extends BaseHttp
         return 0;
     }
 
-    protected function formatPhoto($inputData = array())
+    /**
+     * Function format photo
+     * @param array $inputData
+     * @return false|string|null
+     */
+    protected function formatPhoto(array $inputData = array())
     {
         if (isset($inputData['photo'])) {
             return json_encode(
@@ -58,6 +68,10 @@ class WebServiceTopic extends BaseHttp
         return null;
     }
 
+    /**
+     *      * Function create or update topic
+     * @return $this
+     */
     public function createOrUpdate(): WebServiceTopic
     {
         $required = ['name', 'tittle', 'keywords', 'photo'];
@@ -92,7 +106,7 @@ class WebServiceTopic extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($name . self::KEY . $tittle . self::KEY . $keywords . self::KEY . $photo . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($name . self::PREFIX_AUTH . $tittle . self::PREFIX_AUTH . $keywords . self::PREFIX_AUTH . $photo . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
@@ -180,6 +194,10 @@ class WebServiceTopic extends BaseHttp
 
     }
 
+    /**
+     * Function list topic with paginate
+     * @return $this
+     */
     public function list(): WebServiceTopic
     {
         $pageNumber = $this->formatPageNumber($this->inputData);
@@ -195,7 +213,7 @@ class WebServiceTopic extends BaseHttp
             );
         } else {
             $user = $this->db->getUserSignature($username);
-            $validSignature = !empty($user) ? md5($username . self::KEY . $user->signature) : "";
+            $validSignature = !empty($user) ? md5($username . self::PREFIX_AUTH . $user->signature) : "";
 
             if ($signature !== $validSignature || empty($user)) {
                 $response = array(
@@ -225,6 +243,10 @@ class WebServiceTopic extends BaseHttp
         return $this;
     }
 
+    /**
+     * Function view detail topic
+     * @return $this
+     */
     public function show(): WebServiceTopic
     {
         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
@@ -248,7 +270,7 @@ class WebServiceTopic extends BaseHttp
             } else {
                 // Request User Roles
                 $user = $this->db->getUserSignature($username);
-                $validSignature = !empty($user) ? md5($id . self::KEY . $username . self::KEY . $user->signature) : "";
+                $validSignature = !empty($user) ? md5($id . self::PREFIX_AUTH . $username . self::PREFIX_AUTH . $user->signature) : "";
 
                 if ($signature !== $validSignature || empty($user)) {
                     $response = array(
