@@ -93,14 +93,7 @@ trait UserTable
         $DB = $this->initUserTable();
 
         //get user data
-        $where = [
-            'id' =>
-                [
-                    'field' => 'id',
-                    'operator' => 'like',
-                    'value' => $data['category'] . '%'
-                ]
-        ];
+        $where = array();
         $select = [
             'id',
             'department_id',
