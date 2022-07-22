@@ -128,7 +128,7 @@ trait ConfigTable
         ];
         $select = ['id', 'language', 'value', 'label', 'type', 'status'];
 
-        $result = $DB->getInfo($where, 'id', 'array', $select);
+        $result = $DB->getInfo($where, 'id', 'result', $select);
         $DB->disconnect();
 
         return $result;

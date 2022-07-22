@@ -120,7 +120,7 @@ trait TopicTable
             ]
         ];
         $select = ['id', 'name', 'is_hot', 'slugs', 'title', 'status', 'description', 'content', 'keywords', 'photo'];
-        $result = $DB->getInfo($where, 'id', 'array', $select);
+        $result = $DB->getInfo($where, 'id', 'result', $select);
         $DB->disconnect();
 
         return $result;
