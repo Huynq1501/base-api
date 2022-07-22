@@ -14,14 +14,14 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__.'/../config.php';
 
 $inputData = [
-    'id' => 'company name 1',
+    'id' => 'company name 1111',
     'language' => 'vietnamese',
     'value' => 'hehehehehe',
-    'label' => 'abc',
-    'type' => 1,
-    'status' => 1,
+//    'label' => 'abc',
+//    'type' => '1',
+//    'status' => '1',
     'username'=>'hippo_push',
-    'signature'=>'6dd3b9a04f625857baac2667f9792aa5'
+    'signature'=>'e732b25c1a33c50c860c6a14c8163e9c'
 ];
 
 $showData = [

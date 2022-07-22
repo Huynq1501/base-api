@@ -14,9 +14,9 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__ . '/../config.php';
 
 $inputData = [
-    'id' => 3,
+//    'id' => 3,
     'name' => 'xin chào mọi người',
-    'status' => 0,
+//    'status' => 0,
     'tittle' => 'topic tittle nè hehe hehe',
     'keywords' => 'topic 1, topic_1',
     'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',

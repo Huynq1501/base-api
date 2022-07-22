@@ -17,24 +17,24 @@ $inputData = [
 //    'id' => 30,
 //    'department_id' => 10,
 //    'parent' => 4,
-    'status' => 1,
-    'user_name' => 'huynq1501',
+//    'status' => 1,
+//    'user_name' => 'huynq1501',
     'fullname' => 'Nham Quang Huy',
     'address' => 'addresss',
-    'email' => 'huynq1501@beetsoft.com.vn',
+    'email' => 'huynq15111111101@beetsoft.com.vn',
 //    'avatar' => '3432a2da78d5e5530b7ff890b5f14233',
 //    'group_id' => 4,
-    'password' => 'Hippo99',
+//    'password' => 'Hippo99',
 //    'reset_password'=>,
     'phone' => '0961618660',
 //    'note' => 'note',
 //    'photo'=>'aaaaa',
 //    'thumb'=>'',
 //    'remember_token' => '111111',
-    'google_token' => '',
-    'google_refresh_token' => '',
+//    'google_token' => '',
+//    'google_refresh_token' => '',
     'username' => 'hippo_push',
-    'signature' => '9827f37cedae3d8806aa4c773511fd59'
+    'signature' => '7671f360aaa9bc0d80cb6622536a1abe'
 ];
 
 $listData = [
@@ -77,34 +77,34 @@ $api->setInputData($inputData)
     ->createOrUpdate();
 
 //api list
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($listData)
-    ->list();
-
-//api show
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($showData)
-    ->show();
-
-//api delete
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($deleteData)
-    ->delete();
-
-//api login
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($loginData)
-    ->userLogin();
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($listData)
+//    ->list();
 //
-//register
-$api = new WebServiceUser($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($registerData)
-    ->userRegister();
+////api show
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($showData)
+//    ->show();
+//
+////api delete
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($deleteData)
+//    ->delete();
+//
+////api login
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($loginData)
+//    ->userLogin();
+////
+////register
+//$api = new WebServiceUser($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($registerData)
+//    ->userRegister();
 
 echo "<pre>";
 print_r($api->getResponse());

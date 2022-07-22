@@ -14,28 +14,28 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__.'/../config.php';
 
 $inputData = [
-    'id' => 301,
+//    'id' => 301,
     'status'=>1,
     'name' => 'xin chào mọi người',
     'title' => 'category demo',
-    'language'=>'',
-    'description' => 'description category',
-    'keywords'=>'keyword category',
-    'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
+//    'language'=>'',
+//    'description' => 'description category',
+//    'keywords'=>'keyword category',
+//    'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
     'parent' => 301,
-    'order_status' => 123,
+//    'order_status' => 123,
     'show_top' => 1,
     'show_home' => 1,
     'show_right' => 1,
     'show_bottom' => 1,
     'level' => 22,
     'username' => 'hippo_push',
-    'signature' => '30e09ad584f160388379b0d31226f1e9'
+    'signature' => '8b0e6c3d79bbbf70794b5992b81221dd'
 ];
 
 $listData = [
-    'page_number' => 1,
-    'max_results' => 4,
+    'page_number' => '1',
+    'max_results' => '4',
     'username' => 'hippo_push',
     'signature' => '073f5afed56bb19a656e34d5020cc63f'
 ];
@@ -46,11 +46,11 @@ $showData = [
     'signature' => '76c366b45b7a34ffec59bc9df17e4c3d'
 ];
 
-////api  create or update
-//$api = new WebServiceCategory($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//api  create or update
+$api = new WebServiceCategory($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 //api list
 $api = new WebServiceCategory($config['OPTIONS']);
