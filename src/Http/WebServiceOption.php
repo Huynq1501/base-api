@@ -79,9 +79,10 @@ class WebServiceOption extends BaseHttp
                     $wheres = array(
                         'name' => $name,
                     );
+                    $Id = $this->inputData['id'] ?? 0;
                     $checkDuplicateName = $this->db->checkOptionExists($wheres);
-                    $option = $this->db->showOption(array('id' => $this->inputData['id']));
-                    $optionId = $option->id ?? 0;
+                    $option = $this->db->findOption(array('id' => $Id, 'name' => $name));
+
                     if (!$checkDuplicateName) {
                         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
                         if ($filter === false) {
@@ -101,7 +102,7 @@ class WebServiceOption extends BaseHttp
                                 );
                             }
                         }
-                    } elseif (!empty($this->inputData['id']) && ($optionId === $this->inputData['id'])) {
+                    } elseif (!empty($this->inputData['id']) && ($option)) {
                         $data['id'] = $this->inputData['id'];
                         $result = $this->db->updateOption($data);
 
@@ -121,7 +122,7 @@ class WebServiceOption extends BaseHttp
                     } else {
                         $response = array(
                             'result' => self::EXIT_CODE['notUnique'],
-                            'desc' => self::API_NAME . ' ' . self::MESSAGES['notUnique'],
+                            'desc' => self::API_NAME . ' name ' . self::MESSAGES['notUnique'],
                             'inputData' => $this->inputData
                         );
                     }

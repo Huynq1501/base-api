@@ -126,4 +126,33 @@ trait OptionTable
         return $result;
     }
 
+    /**
+     *
+     * @param array $data
+     * @return array|Collection|object|string|null
+     */
+    public function findOption(array $data = array())
+    {
+        $DB = $this->initOptionTable();
+        //show result
+        $where = [
+            'id' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['id']
+            ],
+            'name' => [
+                'field' => 'id',
+                'operator' => '=',
+                'value' => $data['name']
+            ]
+        ];
+        $select = ['id', 'name', 'value', 'status', 'created_at'];
+
+        $result = $DB->getInfo($where, 'id', 'result', $select);
+        $DB->disconnect();
+
+        return $result;
+    }
+
 }
