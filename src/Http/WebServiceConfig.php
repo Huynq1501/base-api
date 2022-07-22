@@ -188,7 +188,7 @@ class WebServiceConfig extends BaseHttp
 
                     $response = array(
                         'result' => self::EXIT_CODE['success'],
-                        'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                        'desc' => self::ACTION['getAll'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
                         'data' => $listConfig,
                     );
                 }

@@ -153,7 +153,7 @@ trait UserTable
             'updated_at'
         ];
 
-        $result = $DB->getInfo($where, 'id', 'array', $select);
+        $result = $DB->getInfo($where, 'id', 'result', $select);
         $DB->disconnect();
 
         return $result;
@@ -193,7 +193,7 @@ trait UserTable
         //check login by user or email
         $where = ['username' => ['field' => 'username', 'operator' => '=', 'value' => $data['account']]];
         $field = 'username';
-        $format = 'array';
+        $format = 'result';
         $select = ['username', 'email', 'salt', 'password'];
         $userName = $DB->getInfo($where, $field, $format, $select);
 

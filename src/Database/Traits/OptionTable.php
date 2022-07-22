@@ -120,7 +120,7 @@ trait OptionTable
         ];
         $select = ['id', 'name', 'value', 'status', 'created_at'];
 
-        $result = $DB->getInfo($where, 'id', 'array', $select);
+        $result = $DB->getInfo($where, 'id', 'result', $select);
         $DB->disconnect();
 
         return $result;

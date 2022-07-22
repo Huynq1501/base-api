@@ -150,7 +150,7 @@ trait CategoryTable
             'order_stt'
         ];
 
-        $result = $DB->getInfo($where, 'id', 'array', $select);
+        $result = $DB->getInfo($where, 'id', 'result', $select);
         $DB->disconnect();
 
         return $result;
