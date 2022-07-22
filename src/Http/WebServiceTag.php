@@ -49,7 +49,7 @@ class WebServiceTag extends BaseHttp
      */
     protected function formatIsHot(array $inputData = array()): int
     {
-        if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT, true)) {
+        if (isset($inputData['is_hot']) && in_array($inputData['is_hot'], self::IS_HOT)) {
             return $inputData['is_hot'];
         }
 

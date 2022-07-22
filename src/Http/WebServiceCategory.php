@@ -42,7 +42,7 @@ class WebServiceCategory extends BaseHttp
      */
     protected function formatParentID(array $inputData = array()): int
     {
-        if (isset($inputData['parent']) && is_int($inputData['parent'])) {
+        if (isset($inputData['parent'])) {
             $checkExits = $this->db->checkCategoryExists(
                 [
                     'id' => $inputData['parent']
@@ -61,24 +61,24 @@ class WebServiceCategory extends BaseHttp
      */
     public function createOrUpdate(): WebServiceCategory
     {
-        $required = ['name', 'title', 'parent'];
+        $required = ['name', 'title', 'parent', 'status'];
         $filter = Filter::filterInputDataIsArray($this->inputData, $required);
 
         if ($filter === false) {
             $response = array(
                 'result' => self::EXIT_CODE['invalidParams'],
-                'desc' => self::MESSAGES['invalidSignature'],
+                'desc' => self::MESSAGES['invalidParams'],
                 'inputData' => $this->inputData
             );
         } else {
             $status = $this->formatStatus($this->inputData);
             $name = $this->inputData['name'] ?? null;
             $slugs = $this->slug->slugify($this->formatInput('slugs', 'name'));
-            $language = $this->slug->slugify($this->inputData['language']) ?? self::DEFAULT_LANGUAGE;
+            $language = empty($this->inputData['language']) ? self::DEFAULT_LANGUAGE : $this->inputData['language'];
             $title = $this->inputData['title'] ?? null;
             $description = $this->slug->slugify($this->formatInput('description', 'title'));
             $keywords = $this->slug->slugify($this->formatInput('keywords', 'title'));
-            $orderStatus = (isset($this->inputData['order_status']) || !is_int($this->inputData['order_status'])) ? $this->inputData['order_status'] : self::DEFAULT_ORDER_STATUS;
+            $orderStatus = empty($this->inputData['order_status']) ? self::DEFAULT_ORDER_STATUS : $this->inputData['order_status'];
             $parent = $this->formatParentID($this->inputData);
             $photo = $this->inputData['photo'] ?? null;
             $username = $this->formatInputUsername($this->inputData);
@@ -89,7 +89,7 @@ class WebServiceCategory extends BaseHttp
             $showBottom = $this->formatShow($this->inputData, 'show_bottom');
             $level = $this->formatStatus($this->inputData);
 
-            if (empty($name) || empty($title) || empty($keywords) || empty($description) || empty($signature) || empty($username)) {
+            if (empty($name) || empty($title) || empty($keywords) || empty($description) || $status === null || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => self::MESSAGES['invalidParams'],

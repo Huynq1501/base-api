@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $config = require __DIR__ . '/../config.php';
 
 $inputData = [
-    'id' => 222,
+    'id' => 23,
     'name' => 'xin chào mọi người',
     'photo' => 'https://vi.wikipedia.org/wiki/H%C3%A0_m%C3%A3#/media/T%E1%BA%ADp_tin:Hippo_memphis.jpg',
     'status' => 0,
@@ -35,11 +35,11 @@ $showData = [
     'signature' => 'a129614c97321f249ef781456abd93e4'
 ];
 
-////api  create or update
-//$api = new WebServiceTag($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($inputData)
-//    ->createOrUpdate();
+//api  create or update
+$api = new WebServiceTag($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($inputData)
+    ->createOrUpdate();
 
 ////api list
 //$api = new WebServiceTag($config['OPTIONS']);
@@ -47,11 +47,11 @@ $showData = [
 //$api->setInputData($listData)
 //    ->list();
 
-//api show
-$api = new WebServiceTag($config['OPTIONS']);
-$api->setSdkConfig($config);
-$api->setInputData($showData)
-    ->show();
+////api show
+//$api = new WebServiceTag($config['OPTIONS']);
+//$api->setSdkConfig($config);
+//$api->setInputData($showData)
+//    ->show();
 
 echo "<pre>";
 print_r($api->getResponse());

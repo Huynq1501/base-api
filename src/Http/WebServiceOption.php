@@ -80,51 +80,50 @@ class WebServiceOption extends BaseHttp
                         'name' => $name,
                     );
                     $checkDuplicateName = $this->db->checkOptionExists($wheres);
-
-                    if ($checkDuplicateName) {
+                    $option = $this->db->showOption(array('id' => $this->inputData['id']));
+                    $optionId = $option->id ?? 0;
+                    if (!$checkDuplicateName) {
                         $filter = Filter::filterInputDataIsArray($this->inputData, ['id']);
                         if ($filter === false) {
-                            $response = array(
-                                'result' => self::EXIT_CODE['invalidParams'],
-                                'desc' => self::MESSAGES['invalidParams'],
-                                'inputData' => $this->inputData
-                            );
-                        } else {
-                            $id = $this->inputData['id'] ?? null;
-                            $data['id'] = $id;
-                            $result = $this->db->updateOption($data);
+                            $id = $this->db->createOption($data);
 
-                            if ($result) {
+                            if ($id > 0) {
                                 $response = array(
                                     'result' => self::EXIT_CODE['success'],
-                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
-                                    'update_id' => $id,
+                                    'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                                    'insert_id' => $id,
                                 );
                             } else {
                                 $response = array(
                                     'result' => self::EXIT_CODE['notFound'],
-                                    'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
-                                    'data' => $this->inputData
+                                    'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
+                                    'insert_id' => $id,
                                 );
                             }
                         }
+                    } elseif (!empty($this->inputData['id']) && ($optionId === $this->inputData['id'])) {
+                        $data['id'] = $this->inputData['id'];
+                        $result = $this->db->updateOption($data);
 
-                    } else {
-                        $id = $this->db->createOption($data);
-
-                        if ($id > 0) {
+                        if ($result) {
                             $response = array(
                                 'result' => self::EXIT_CODE['success'],
-                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
-                                'insert_id' => $id,
+                                'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['success'],
+                                'update_id' => $data['id'],
                             );
                         } else {
                             $response = array(
                                 'result' => self::EXIT_CODE['notFound'],
-                                'desc' => self::ACTION['create'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
-                                'insert_id' => $id,
+                                'desc' => self::ACTION['update'] . ' ' . self::API_NAME . ' - ' . self::MESSAGES['failed'],
+                                'data' => $this->inputData
                             );
                         }
+                    } else {
+                        $response = array(
+                            'result' => self::EXIT_CODE['notUnique'],
+                            'desc' => self::API_NAME . ' ' . self::MESSAGES['notUnique'],
+                            'inputData' => $this->inputData
+                        );
                     }
                 }
             }

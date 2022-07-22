@@ -177,10 +177,10 @@ class BaseHttp extends BaseCore
 
     /**
      * Function format max result in page
-     * @param $inputData
+     * @param array $inputData
      * @return int|mixed
      */
-    protected function formatMaxResult($inputData = array())
+    protected function formatMaxResult(array $inputData = array())
     {
         if (isset($inputData['max_results']) && $inputData['max_results'] > 0) {
             return $inputData['max_results'];
@@ -191,16 +191,16 @@ class BaseHttp extends BaseCore
 
     /**
      * Function format status
-     * @param $inputData
+     * @param array $inputData
      * @return int|null
      */
-    protected function formatStatus($inputData = array()): ?int
+    protected function formatStatus(array $inputData = array()): ?int
     {
-        if (!empty($inputData['status']) && in_array($inputData['status'], self::STATUS, true)) {
+        if (!empty($inputData['status']) && in_array($inputData['status'], self::STATUS)) {
             return $inputData['status'];
         }
 
-        return null;
+        return self::STATUS['active'];
     }
 
     /**
@@ -211,8 +211,7 @@ class BaseHttp extends BaseCore
      */
     public function formatShow(array $inputData = array(), $field): int
     {
-        if (isset($inputData[$field]) && in_array($inputData[$field], self::SHOW_STATUS,
-                true)) {
+        if (isset($inputData[$field]) && in_array($inputData[$field], self::SHOW_STATUS)) {
             return $inputData[$field];
         }
 
