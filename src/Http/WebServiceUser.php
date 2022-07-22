@@ -442,8 +442,7 @@ class WebServiceUser extends BaseHttp
                     'inputData' => $inputData
                 );
             } else {
-                $result = $this->db->checkUserLogin(['account' => $inputData['user']]);
-
+                $result = $this->db->checkUserLogin(['account' => $inputData['user']])[0];
                 // check account exists in the database
                 if (!$result) {
                     $response = array(
