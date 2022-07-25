@@ -142,7 +142,7 @@ trait OptionTable
                 'value' => $data['id']
             ],
             'name' => [
-                'field' => 'id',
+                'field' => 'name',
                 'operator' => '=',
                 'value' => $data['name']
             ]
