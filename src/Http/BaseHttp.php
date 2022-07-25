@@ -27,6 +27,7 @@ class BaseHttp extends BaseCore
         'notFound' => 8,
         'notChange' => 9,
         'notUnique' => 10,
+        'failed' => 11,
     ];
 
     public const PAGINATE = array(
@@ -46,7 +47,7 @@ class BaseHttp extends BaseCore
         'duplicate' => 'Duplicate value',
         'notFound' => 'Khong ton tai ban ghi tuong ung',
         'notChange' => 'Update that bai, data khong thay doi',
-        'notUnique' => 'Da ton tai, hay thu lai'
+        'notUnique' => 'Da ton tai, hay thu lai',
     );
 
     public const ACTION = array(
