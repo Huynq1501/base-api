@@ -32,7 +32,12 @@
         "nguyenanhung/helpers": "^3.0",
         "nguyenanhung/security": "^3.0",
         "nguyenanhung/validation": "^1.0",
-        "lcobucci/jwt": "^4.1 || ^4.0 || ^3.4.6"
+        "lcobucci/jwt": "^4.1 || ^4.0 || ^3.4.6",
+        "league/oauth2-google": "^4.0",
+        "league/oauth2-facebook": "^2.2",
+        "league/oauth2-instagram": "^3.1",
+        "league/oauth2-linkedin": "^5.1",
+        "league/oauth2-github": "^3.0"
     },
     "require-dev": {
         "tramtro/make-some-noise": "^1.0"
