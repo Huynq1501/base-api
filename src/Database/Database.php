@@ -5,12 +5,10 @@ namespace nguyenanhung\Backend\BaseAPI\Database;
 use nguyenanhung\Backend\BaseAPI\Base\BaseCore;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\CategoryTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\ConfigTable;
-use nguyenanhung\Backend\BaseAPI\Database\Traits\DepartmentTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\OptionTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\SignatureTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\TagTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\TopicTable;
-use nguyenanhung\Backend\BaseAPI\Database\Traits\UserGroupTable;
 use nguyenanhung\Backend\BaseAPI\Database\Traits\UserTable;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
@@ -26,7 +24,8 @@ class Database extends BaseCore
     use SignatureTable,ConfigTable,OptionTable,TopicTable,CategoryTable,TagTable,UserTable;
 
     /** @var array $database */
-    protected $database,$table;
+    protected array $table;
+    protected array $database;
 
     /**
      * Database constructor.

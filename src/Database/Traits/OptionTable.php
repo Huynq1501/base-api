@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
-use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -83,9 +82,9 @@ trait OptionTable
     /**
      * Function get list option with paginate
      * @param array $data
-     * @return array|Collection|object|string
+     * @return object|array|string
      */
-    public function listOption(array $data = array())
+    public function listOption(array $data = array()): object|array|string
     {
         // connect to option table
         $DB = $this->initOptionTable();
@@ -105,9 +104,9 @@ trait OptionTable
     /**
      * Function show option by option id
      * @param array
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function showOption(array $data = array())
+    public function showOption(array $data = array()): object|array|string|null
     {
         $DB = $this->initOptionTable();
         //show result
@@ -129,9 +128,9 @@ trait OptionTable
     /**
      *
      * @param array $data
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function findOption(array $data = array())
+    public function findOption(array $data = array()): object|array|string|null
     {
         $DB = $this->initOptionTable();
         //show result

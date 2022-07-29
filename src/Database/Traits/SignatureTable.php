@@ -16,15 +16,15 @@ trait SignatureTable
     /**
      * Function getUserSignature
      *
-     * @param string|null $nickname
-     * @param int|null    $role
+     * @param string $nickname
+     * @param int|null $role
      *
      * @return array|bool|Collection|mixed|object|string|null
      * @author   : 713uk13m <dev@nguyenanhung.com>
      * @copyright: 713uk13m <dev@nguyenanhung.com>
      * @time     : 22/06/2022 56:41
      */
-    public function getUserSignature(string $nickname = '', int $role = null)
+    public function getUserSignature(string $nickname = '', int $role = null): mixed
     {
         $table    = 'data_signature';
         $cacheKey = $this->cachePrefix . __FUNCTION__ . hash('md5', $table . $nickname . $role);
