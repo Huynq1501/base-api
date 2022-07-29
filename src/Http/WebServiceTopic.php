@@ -55,7 +55,7 @@ class WebServiceTopic extends BaseHttp
      * @param array $inputData
      * @return false|string|null
      */
-    protected function formatPhoto(array $inputData = array())
+    protected function formatPhoto(array $inputData = array()): bool|string|null
     {
         if (isset($inputData['photo'])) {
             return json_encode(

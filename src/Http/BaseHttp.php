@@ -71,8 +71,9 @@ class BaseHttp extends BaseCore
         'active' => 1,
     );
 
-    /** @var Database */
-    protected $db, $slug;
+    /** @var Database|SlugUrl */
+    protected SlugUrl|Database $slug;
+    protected Database $db;
 
     /**
      * BaseHttp constructor.
@@ -90,7 +91,7 @@ class BaseHttp extends BaseCore
         $this->slug = new SlugUrl();
     }
 
-    protected function formatInputStartDate($inputData = array())
+    protected function formatInputStartDate($inputData = array()): mixed
     {
         if (isset($inputData['begin_date'])) {
             $startDate = $inputData['begin_date'];
@@ -123,7 +124,7 @@ class BaseHttp extends BaseCore
      * @param array $inputData
      * @return mixed|null
      */
-    protected function formatInputUsername(array $inputData = array())
+    protected function formatInputUsername(array $inputData = array()): mixed
     {
         if (isset($inputData['username'])) {
             $res = $inputData['username'];
@@ -145,7 +146,7 @@ class BaseHttp extends BaseCore
      * @param array $inputData
      * @return mixed|null
      */
-    protected function formatInputSignature(array $inputData = array())
+    protected function formatInputSignature(array $inputData = array()): mixed
     {
         if (isset($inputData['signature'])) {
             $res = $inputData['signature'];
@@ -167,7 +168,7 @@ class BaseHttp extends BaseCore
      * @param array $inputData
      * @return int|mixed
      */
-    protected function formatPageNumber(array $inputData = array())
+    protected function formatPageNumber(array $inputData = array()): mixed
     {
         if (isset($inputData['page_number']) && $inputData['page_number'] > 0) {
             return $inputData['page_number'];
@@ -181,7 +182,7 @@ class BaseHttp extends BaseCore
      * @param array $inputData
      * @return int|mixed
      */
-    protected function formatMaxResult(array $inputData = array())
+    protected function formatMaxResult(array $inputData = array()): mixed
     {
         if (isset($inputData['max_results']) && $inputData['max_results'] > 0) {
             return $inputData['max_results'];
@@ -243,7 +244,7 @@ class BaseHttp extends BaseCore
      * @param $field
      * @return mixed|null
      */
-    public function formatInputNull($field)
+    public function formatInputNull($field): mixed
     {
         return empty($this->inputData[$field]) ? null : $this->inputData[$field];
     }

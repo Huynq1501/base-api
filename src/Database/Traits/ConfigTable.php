@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
-use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -83,9 +82,9 @@ trait ConfigTable
     /**
      * Function get list config with paginate
      * @param array $data
-     * @return array|Collection|object|string
+     * @return object|array|string
      */
-    public function listConfig(array $data = array())
+    public function listConfig(array $data = array()): object|array|string
     {
         // connect to config table
         $DB = $this->initConfigTable();
@@ -113,9 +112,9 @@ trait ConfigTable
     /**
      * Function show config by config id
      * @param array $data
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function showConfig(array $data = array())
+    public function showConfig(array $data = array()): object|array|string|null
     {
         $DB = $this->initConfigTable();
         //show result

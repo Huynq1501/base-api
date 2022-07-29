@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
-use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -85,9 +84,9 @@ trait TagTable
     /**
      * Function get list tag with paginate
      * @param array $data
-     * @return array|Collection|object|string
+     * @return object|array|string
      */
-    public function listTag(array $data = array())
+    public function listTag(array $data = array()): object|array|string
     {
         // connect to tag table
         $DB = $this->initTagTable();
@@ -120,9 +119,9 @@ trait TagTable
     /**
      * Function show tag by tag id
      * @param array $data
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function showTag(array $data = array())
+    public function showTag(array $data = array()): object|array|string|null
     {
         $DB = $this->initTagTable();
         //show result

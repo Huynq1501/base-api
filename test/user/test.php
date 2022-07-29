@@ -57,7 +57,7 @@ $deleteData = [
 ];
 
 $loginData = [
-    'user' => 'huynq1501@beetsoft.com.vn',
+    'user' => 'hippo99',
     'password' => 'Hippo99',
 ];
 
@@ -94,11 +94,11 @@ $api->setInputData($inputData)
 //$api->setInputData($deleteData)
 //    ->delete();
 //
-////api login
-//$api = new WebServiceUser($config['OPTIONS']);
-//$api->setSdkConfig($config);
-//$api->setInputData($loginData)
-//    ->userLogin();
+//api login
+$api = new WebServiceUser($config['OPTIONS']);
+$api->setSdkConfig($config);
+$api->setInputData($loginData)
+    ->userLogin();
 ////
 ////register
 //$api = new WebServiceUser($config['OPTIONS']);

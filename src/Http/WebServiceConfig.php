@@ -74,7 +74,7 @@ class WebServiceConfig extends BaseHttp
             $status = $this->formatStatus($this->inputData);
             $username = $this->formatInputUsername($this->inputData);
             $signature = $this->formatInputSignature($this->inputData);
-            if (empty($id) || empty($status) || empty($language) || empty($value) || empty($signature) || empty($username)) {
+            if (empty($id) || $status === null || empty($language) || empty($value) || empty($signature) || empty($username)) {
                 $response = array(
                     'result' => self::EXIT_CODE['paramsIsEmpty'],
                     'desc' => self::MESSAGES['invalidParams'],

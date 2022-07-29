@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
-use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -85,9 +84,9 @@ trait CategoryTable
     /**
      * Function get list category with paginate
      * @param array $data
-     * @return array|Collection|object|string
+     * @return object|array|string
      */
-    public function listCategory(array $data = array())
+    public function listCategory(array $data = array()): object|array|string
     {
         // connect to category table
         $DB = $this->initCategoryTable();
@@ -123,9 +122,9 @@ trait CategoryTable
     /**
      * Function show category by category id
      * @param array $data
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function showCategory(array $data = array())
+    public function showCategory(array $data = array()): object|array|string|null
     {
         $DB = $this->initCategoryTable();
         //show result

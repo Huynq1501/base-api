@@ -46,7 +46,7 @@ class WebServiceUser extends BaseHttp
      * @param array $inputData
      * @return mixed|string
      */
-    protected function formatUserName(array $inputData = array())
+    protected function formatUserName(array $inputData = array()): mixed
     {
         if (empty($inputData['user_name'])) {
             return implode('@', explode('@', $inputData['email'], -1));
@@ -442,7 +442,7 @@ class WebServiceUser extends BaseHttp
                     'inputData' => $inputData
                 );
             } else {
-                $result = $this->db->checkUserLogin(['account' => $inputData['user']])[0];
+                $result = $this->db->checkUserLogin(['account' => $inputData['user']])? $this->db->checkUserLogin(['account' => $inputData['user']])[0]:false;
                 // check account exists in the database
                 if (!$result) {
                     $response = array(

@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
-use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -85,9 +84,9 @@ trait UserTable
     /**
      * Function get list user with paginate
      * @param array $data
-     * @return array|Collection|object|string
+     * @return object|array|string
      */
-    public function listUser(array $data = array())
+    public function listUser(array $data = array()): object|array|string
     {
         // connect to user table
         $DB = $this->initUserTable();
@@ -120,9 +119,9 @@ trait UserTable
     /**
      * Function show user
      * @param array $data
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function showUser(array $data = array())
+    public function showUser(array $data = array()): object|array|string|null
     {
         $DB = $this->initUserTable();
         //show result
@@ -178,9 +177,9 @@ trait UserTable
     /**
      * Function to check if the login account matches the username or email in the database
      * @param array $data
-     * @return array|false|Collection|object|string
+     * @return object|bool|array|string
      */
-    public function checkUserLogin(array $data = array())
+    public function checkUserLogin(array $data = array()): object|bool|array|string
     {
         $DB = $this->initUserTable();
         //check login by user or email

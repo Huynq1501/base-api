@@ -73,16 +73,15 @@ class WebServiceSSOLogin extends BaseHttp
             return $this->facebookLogin();
         }
 
-        if ($this->state == 'instagram') {
+        if ($this->state === 'instagram') {
             return $this->instagramLogin();
         }
-        if ($this->state == 'linkedin') {
+        if ($this->state === 'linkedin') {
             return $this->linkedinLogin();
         }
-        if ($this->state == 'github') {
+        if ($this->state === 'github') {
             return $this->githubLogin();
         }
-
 
     }
 

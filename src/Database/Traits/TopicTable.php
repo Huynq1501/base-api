@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\Backend\BaseAPI\Database\Traits;
 
-use Illuminate\Support\Collection;
 use nguyenanhung\MyDatabase\Model\BaseModel;
 
 /**
@@ -84,9 +83,9 @@ trait TopicTable
     /**
      * Function get list topic with paginate
      * @param array $data
-     * @return array|Collection|object|string
+     * @return object|array|string
      */
-    public function listTopic(array $data = array())
+    public function listTopic(array $data = array()): object|array|string
     {
         // connect to topic table
         $DB = $this->initTopicTable();
@@ -106,9 +105,9 @@ trait TopicTable
     /**
      * Function show topic by topic id
      * @param array $data
-     * @return array|Collection|object|string|null
+     * @return object|array|string|null
      */
-    public function showTopic(array $data = array())
+    public function showTopic(array $data = array()): object|array|string|null
     {
         $DB = $this->initTopicTable();
         //show result
